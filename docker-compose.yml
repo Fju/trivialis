@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  www:
+    image: php:7.2-apache
+    ports:
+      # default public HTTP port
+      - "8000:80"
+    volumes:
+      # mount volume for development, local changes have effect
+      # without having to restart the container
+      - ./dist/:/var/www/html/:ro
