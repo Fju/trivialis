@@ -1,7 +1,12 @@
 @import "~bootstrap/scss/bootstrap.scss";
 
+.main {
+	height: 100vh;
+	overflow: hidden;	
+}
 
-body {
-	padding: 2em;
-	font-family: sans-serif;
+.nav--sidebar {
+	min-width: 200px;
+	max-width: 300px;
+	width: 25vw;
 }

@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-$('#login-submit').on('click', function() {
+/*$('#login-submit').on('click', function() {
 	var username = $('#login-username').val();
 	var password = $('#login-password').val();
 
@@ -8,4 +8,11 @@ $('#login-submit').on('click', function() {
 		console.log(result);	
 	});
 });
+*/
+
+import Vue from 'vue';
+import LoginPage from '../components/LoginPage.vue';
+
+var loginPage = new Vue(LoginPage);
+loginPage.$mount('#login-page');
 

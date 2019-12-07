@@ -2,7 +2,7 @@ version: "3"
 
 services:
   www:
-    image: php:7.2-apache
+    build: .
     ports:
       # default public HTTP port
       - "8000:80"
@@ -10,3 +10,19 @@ services:
       # mount volume for development, local changes have effect
       # without having to restart the container
       - ./dist/:/var/www/html/:ro
+  db:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+      - MYSQL_DATABASE=trivialis
+   
+  dbadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "8080:80"
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+    depends_on:
+      - db
