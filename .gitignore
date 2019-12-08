@@ -5,3 +5,4 @@ dist/*
 !dist/phpinclude
 !dist/.htaccess
 !dist/config
+!dist/composer.*

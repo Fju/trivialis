@@ -3,6 +3,9 @@
 require_once "DB.class.php";
 
 
+// TODO: generate default config
+// TODO: create random key for signing web tokens!
+
 function createUsers() {
 	// drop user table (for development only)
 	DB::exec("DROP TABLE IF EXISTS users");

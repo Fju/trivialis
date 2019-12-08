@@ -1,1 +1,1 @@
-php_value include_path "/var/www/html:/var/www/html/phpinclude"
+php_value include_path "/var/www/html:/var/www/html/phpinclude:/var/www/html/vendor"

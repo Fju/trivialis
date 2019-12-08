@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import 'bootstrap';
 
 /*$('#login-submit').on('click', function() {
 	var username = $('#login-username').val();
@@ -15,4 +16,5 @@ import LoginPage from '../components/LoginPage.vue';
 
 var loginPage = new Vue(LoginPage);
 loginPage.$mount('#login-page');
+
 
