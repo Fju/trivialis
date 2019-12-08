@@ -9,4 +9,24 @@
 	min-width: 200px;
 	max-width: 300px;
 	width: 25vw;
+	padding: 0;
+
+	.nav-item {
+		padding: 1em 2em;
+		font-weight: bold;
+
+
+		.nav-link {
+			color: mix($primary, white, 20%);
+		}
+	}
+
+	.nav-item:hover {
+		background: mix($primary, white, 20%);
+		
+		.nav-link {
+			color: $dark;
+		}
+	}
+
 }

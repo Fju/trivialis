@@ -4,29 +4,29 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h3 class="modal-title" id="exampleModalLabel">Login</h3>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
 				</div>
 				<div class="modal-body">
-					<form id="login-form" class="row">
-						<div class="form-group col-6">
-							<label for="login-username">Username:</label>
-							<input type="text" name="username" id="login-username" class="form-control" placeholder="Username" />
-						</div>
-						<div class="form-group col-6">
-							<label for="login-password">Password:</label>
-							<input type="password" name="password" id="login-password" class="form-control"/>
-						</div>
-					</form>
-					<div class="col-12 mt-4">
+					<div class="mt-4">
 						<div class="alert alert-danger" :class="{ 'd-none': !error }" role="alert">
 							{{ error_message }}
 						</div>
 					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="submit" class="btn btn-primary" id="login-submit" v-on:click="onSubmit">Submit</button>
+					<form id="login-form" v-on:submit="onSubmit">
+						<div class="form-group">
+							<label for="login-username">Username:</label>
+							<input type="text" name="username" id="login-username" class="form-control" placeholder="Username" />
+						</div>
+						<div class="form-group">
+							<label for="login-password">Password:</label>
+							<input type="password" name="password" id="login-password" class="form-control" />
+						</div>
+						<div class="row">
+							<div class="col"></div>
+							<div class="col-auto">
+								<button class="btn btn-primary" id="login-submit" v-on:click="onSubmit">Login</button>
+							</div>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -44,6 +44,7 @@
 		},
 		methods: {
 			onSubmit (e) {
+				console.log(e);
 				// prevent submitting the form
 				e.preventDefault();
 				$.post('/backend/login.php', $('#login-form').serialize()).done((function(data) {
@@ -56,15 +57,17 @@
 					} else {
 						this.error = false;
 						console.log(data);
+
+						$('#login-modal').modal('hide');
 					}
 				}).bind(this));
 			}
 		},
 		mounted () {
-			$('#login-modal').modal({
+			/*$('#login-modal').modal({
 				backdrop: 'static',
 				keyboard: false
-			}).modal('show');
+			}).modal('show');*/
 		}
 	}
 </script>

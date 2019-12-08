@@ -1,20 +1,19 @@
 import $ from 'jquery';
 import 'bootstrap';
 
-/*$('#login-submit').on('click', function() {
-	var username = $('#login-username').val();
-	var password = $('#login-password').val();
-
-	$.post('/backend/login.php', { username: username, password: password }, function(result) {
-		console.log(result);	
-	});
-});
-*/
 
 import Vue from 'vue';
-import LoginPage from '../components/LoginPage.vue';
+import VueRouter from 'vue-router';
+Vue.use(VueRouter)
 
-var loginPage = new Vue(LoginPage);
-loginPage.$mount('#login-page');
+import App from '../App.vue';
+import LoginModal from '../components/LoginModal.vue';
+
+
+var loginModal = new Vue(LoginModal);
+loginModal.$mount('#login-modal');
+
+var app = new Vue(App);
+app.$mount('#app');
 
 
