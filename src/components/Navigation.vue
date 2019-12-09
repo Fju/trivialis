@@ -20,9 +20,12 @@
 	</ul>
 </template>
 <script>
+	import { router } from '../js/router.js';
+
 	export default {
 		data () {
 			return {};
-		}
+		},
+		//router: router
 	}
 </script>

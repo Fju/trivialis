@@ -2,7 +2,7 @@
 	<div class="page">
 		<h1>Fields</h1>
 		<p>Fields are just pieces of texts that will be used to render a page.</p>
-		<button class="btn btn-success">Create new Field</button>
+		<router-link to="/fields/editor" class="btn btn-success">Create new Field</router-link>
 		<table class="table table-striped">
 			<thead>
 				<tr>
@@ -27,6 +27,8 @@
 	</div>
 </template>
 <script>
+	import { router } from '../js/router.js';
+
 	export default {
 		data () {
 			return {

@@ -23,13 +23,23 @@
 	export default {
 		data () {
 			return {
-				items: ['Fields', 'asd']
+				items: []
+			}
+		},
+		methods: {
+			updateBreadcrumbs () {
+				if (typeof this.$route.name	=== 'string') {
+					this.items = this.$route.name.split('/');
+				}
 			}
 		},
 		watch: {
-			$route (to, from) {
-				this.items = [ to.name ];
+			$route () {
+				this.updateBreadcrumbs();
 			}
+		},
+		mounted () {
+			this.updateBreadcrumbs();
 		}
 	}
 </script>

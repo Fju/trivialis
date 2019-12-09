@@ -8,27 +8,17 @@
 	</div>
 </template>
 <script>
-	import VueRouter from 'vue-router';
+	import { router } from './js/router.js';
 
 	import Navigation from './components/Navigation.vue';
 	import Toolbar from './components/Toolbar.vue';
-	import FieldsPage from './components/FieldsPage.vue';
-	import BlankPage from './components/BlankPage.vue';
 
-	const routes = [
-		{ path: '/fields', name: 'Fields', component: FieldsPage },
-		{ path: '/pages', name: 'Pages', component: BlankPage },
-		{ path: '/assets', name: 'Assets', component: BlankPage },
-		{ path: '/statistics', name: 'Statistics', component: BlankPage }
-	];
 	
 	export default {
 		data () {
 			return {};
 		},
 		components: { Navigation, Toolbar },
-		router: new VueRouter({
-			routes: routes
-		})
+		router: router
 	}
 </script>
