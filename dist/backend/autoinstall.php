@@ -1,6 +1,7 @@
 <?php
 
 require_once "DB.class.php";
+require_once "Config.class.php";
 
 
 // TODO: generate default config
@@ -17,21 +18,20 @@ function createUsers() {
 	);");
 
 	// TODO: read from config file
-	$users = [
-		[ "username" => "trivialis", "password" => "trivialis" ]	
-	];
+	$users = Config::getUsers();
+	var_dump($users);
 
 	// insert row for each user specified in the config
 	foreach ($users as $user) {
 		$username = DB::escape($user["username"]);
 		$password = DB::escape(password_hash($user["password"], PASSWORD_BCRYPT));
-		DB::exec("INSERT INTO users (username, password, role) VALUES ('$username', '$password', 'admin');");
+		$role = DB::escape($user["role"]);
+		DB::exec("INSERT INTO users (username, password, role) VALUES ('$username', '$password', '$role');");
 	}
 
 
 	echo "Erfolgreich installiert";
 }
-
 
 createUsers();
 

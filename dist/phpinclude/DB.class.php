@@ -1,22 +1,31 @@
 <?php
 
-class DBException extends Exception {
+require_once "Config.class.php";
 
-}
+class DBException extends Exception {}
+
 class DB {
 	
-	const DB_HOST = "trivialis_db_1";
-	const DB_USER = "root";
-	const DB_PASSWORD = "example";
-	const DB_NAME = "trivialis";
-
 	private static $conn;
 
 	public static function init() {
-		self::$conn = new mysqli(self::DB_HOST, self::DB_USER, self::DB_PASSWORD, self::DB_NAME);
+		try {
+			$db_host = Config::getDBHost();
+			$db_user = Config::getDBUser();
+			$db_password = Config::getDBPassword();
+			$db_name = Config::getDBName();
 
-		self::$conn->query("SET NAMES 'utf8'");
-		self::$conn->query("SET CHARACTER SET 'utf8'");
+			// establish connection
+			self::$conn = new mysqli($db_host, $db_user, $db_password, $db_name);
+			// set charachter encoding
+			self::$conn->query("SET NAMES 'utf8'");
+			self::$conn->query("SET CHARACTER SET 'utf8'");
+		} catch(InvalidConfigurationException $e) {
+			// dunno what happens here
+			var_dump($e);
+		} catch(Exception $e) {
+			
+		}
 	}
 
 	public static function close() {
@@ -53,7 +62,6 @@ class DB {
 	public static function escape($text) {
 		return self::$conn->real_escape_string($text);
 	}
-
 }
 
 DB::init();

@@ -1,6 +1,5 @@
 <template>
 	<div class="page">
-		
 		<h2>Edit</h2>
 		<form class="row">
 			<div class="col-12 form-group">
@@ -20,7 +19,7 @@
 </template>
 <script>
 	//import { Multipane, MultipaneResizer } from 'vue-multipane';
-
+	// TODO: santize output HTML!
 	import marked from 'marked';
 
 	var compile_id;

@@ -1,0 +1,15 @@
+jwt_key: "weak-password"
+db:
+  host: "trivialis_db_1"
+  user: "root"
+  password: "example"
+  name: "trivialis"
+users:
+  -
+    username: "trivialis"
+    password: "trivialis"
+    role: "admin"
+  -
+    username: "test"
+    password: "123"
+    role: "other"

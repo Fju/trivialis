@@ -4,5 +4,5 @@ dist/*
 !dist/backend
 !dist/phpinclude
 !dist/.htaccess
-!dist/config
+!dist/config.yml
 !dist/composer.*

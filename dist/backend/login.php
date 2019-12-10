@@ -11,7 +11,7 @@ header("Content-Type: application/json; charset=utf-8");
 
 
 // TODO: read from config
-$key = "example_key";
+$key = Config::getJWTKey();
 
 function checkLogin($username, $password) {
 	$response = array();

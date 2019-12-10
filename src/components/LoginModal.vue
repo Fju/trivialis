@@ -35,6 +35,8 @@
 <script>
 	import $ from 'jquery';
 
+	import events from 'events';
+
 	export default {
 		data () {
 			return {
@@ -56,18 +58,28 @@
 						$('#login-password').val('');
 					} else {
 						this.error = false;
-						console.log(data);
 
-						$('#login-modal').modal('hide');
+						console.log(data);
+						this.closeDialog();
 					}
 				}).bind(this));
+			},
+			openDialog () {
+				$('#login-modal').modal('show');
+			},
+			closeDialog () {
+				$('#login-modal').modal('hide');
 			}
 		},
 		mounted () {
-			/*$('#login-modal').modal({
+			// disable dismissing the dialog by clicking into the backdrop or pressing ESC
+			$('#login-modal').modal({
 				backdrop: 'static',
 				keyboard: false
-			}).modal('show');*/
+			});
+			
+			// listen on `open-login` event
+			events.$on('open-login', this.openDialog);
 		}
 	}
 </script>

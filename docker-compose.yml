@@ -9,7 +9,7 @@ services:
     volumes:
       # mount volume for development, local changes have effect
       # without having to restart the container
-      - ./dist/:/var/www/html/:ro
+      - ./dist/:/var/www/html/
   db:
     image: mysql:5.7
     ports:
