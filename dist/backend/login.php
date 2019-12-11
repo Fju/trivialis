@@ -2,16 +2,13 @@
 
 require_once "autoload.php";
 require_once "DB.class.php";
+require_once "Config.class.php";
 
 use \Firebase\JWT\JWT;
 
 
 // JSON format
 header("Content-Type: application/json; charset=utf-8");
-
-
-// TODO: read from config
-$key = Config::getJWTKey();
 
 function checkLogin($username, $password) {
 	$response = array();
@@ -32,7 +29,7 @@ function checkLogin($username, $password) {
 					"iat" => time(), // issued at
 					"exp" => time() + 1000 * 60 * 30, // expiration time
 					"iss" => "trivialis"
-				), $key);
+				), Config::getJWTKey());
 			} else {
 				// invalid password
 				$response["err"] = "Incorrect password";

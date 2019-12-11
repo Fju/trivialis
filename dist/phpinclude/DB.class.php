@@ -20,11 +20,12 @@ class DB {
 			// set charachter encoding
 			self::$conn->query("SET NAMES 'utf8'");
 			self::$conn->query("SET CHARACTER SET 'utf8'");
+			self::$conn->query("SET COLLATE 'utf8_unicode_ci'");
 		} catch(InvalidConfigurationException $e) {
 			// dunno what happens here
 			var_dump($e);
 		} catch(Exception $e) {
-			
+			echo $e->getMessage();	
 		}
 	}
 

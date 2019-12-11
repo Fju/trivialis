@@ -35,7 +35,7 @@
 <script>
 	import $ from 'jquery';
 
-	import events from 'events';
+	import { events, setJWT } from '../js/globals.js';
 
 	export default {
 		data () {
@@ -60,6 +60,9 @@
 						this.error = false;
 
 						console.log(data);
+
+						setJWT(data.token);
+
 						this.closeDialog();
 					}
 				}).bind(this));
@@ -79,7 +82,7 @@
 			});
 			
 			// listen on `open-login` event
-			events.$on('open-login', this.openDialog);
+			//events.$on('open-login', this.openDialog);
 		}
 	}
 </script>

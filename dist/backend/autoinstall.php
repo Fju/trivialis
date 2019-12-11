@@ -12,14 +12,14 @@ function createUsers() {
 	DB::exec("DROP TABLE IF EXISTS users");
 	// create new user table
 	DB::exec("CREATE TABLE users (
-		username VARCHAR(50) NOT NULL UNIQUE,
+		username VARCHAR(50) NOT NULL PRIMARY KEY,
 		password VARCHAR(256) NOT NULL,
 		role ENUM('admin', 'other')	DEFAULT 'other'
 	);");
 
 	// TODO: read from config file
 	$users = Config::getUsers();
-	var_dump($users);
+	//var_dump($users);
 
 	// insert row for each user specified in the config
 	foreach ($users as $user) {
@@ -33,6 +33,19 @@ function createUsers() {
 	echo "Erfolgreich installiert";
 }
 
-createUsers();
+function createFields() {
+	// drop fields table (for development only)
+	DB::exec("DROP TABLE IF EXISTS fields");
+	// create fields table
+	DB::exec("CREATE TABLE fields (
+		name VARCHAR(50) NOT NULL PRIMARY KEY,
+		content TEXT
+	)");
 
+	echo "Alles fresh";
+}
+
+
+createUsers();
+createFields();
 

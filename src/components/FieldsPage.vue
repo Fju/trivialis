@@ -7,7 +7,6 @@
 			<thead>
 				<tr>
 					<th>Name</th>
-					<th>Type</th>
 					<th>Content</th>
 					<th></th>
 				</tr>
@@ -15,7 +14,6 @@
 			<tbody>
 				<tr v-for="row in rows">
 					<td>{{ row.name }}</td>
-					<td>{{ row.type }}</td>
 					<td>{{ row.content }}</td>
 					<td class="small-row">
 						<button class="btn btn-primary btn-sm">Bearbeiten</button>
@@ -27,16 +25,28 @@
 	</div>
 </template>
 <script>
+	import $ from 'jquery';
 	import { router } from '../js/router.js';
+	import { getJWT } from '../js/globals.js';
 
 	export default {
 		data () {
 			return {
 				rows: [
 					// Test data
-					{ name: 'title', type: 'raw', content: 'Lorem ipsum dolor sit amet' }
 				]
 			};
+		},
+		methods: {
+			loadData () {
+				var token = getJWT();	
+				$.ajax({ headers: { 'Authorization': 'Bearer ' + token }, url: '/backend/fields.php' }).done((function(data) {
+					if (data.fields) this.rows = data.fields;
+				}).bind(this));
+			}
+		},
+		mounted () {
+			this.loadData();
 		}
 	}
 </script>
