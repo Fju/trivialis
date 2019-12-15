@@ -9,14 +9,24 @@ header("Content-Type: application/json; charset=utf-8");
 
 function getFields() {
 	$response = array();
-	$response["fields"] = DB::query("SELECT * FROM fields");
+	try {
+		if (isset($_POST["id"])) {
+			$id = DB::escape($_POST["id"]);
+			$response["fields"] = DB::query("SELECT * FROM fields WHERE id = $id");
+		} else {
+			$response["fields"] = DB::query("SELECT * FROM fields");
+		}
+	} catch (DBException $e) {
+		$err_code = $e->getErrorCode();
+		$err_msg = $e->getError();
+		$response["err"] = "Database error (#$err_code)\n$err_msg";
+	}
 
 	return $response;
 }
 
 function setFields() {
 	$response = array();
-	
 	try {
 		if ($_POST["method"] === "update") {
 			// check parameters

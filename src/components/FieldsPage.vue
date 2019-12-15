@@ -1,8 +1,14 @@
 <template>
 	<div class="page">
 		<h1>Fields</h1>
-		<p>Fields are just pieces of texts that will be used to render a page.</p>
-		<router-link to="/fields/new" class="btn btn-success mb-4">Create new Field</router-link>
+		<p></p>
+		<div class="row mb-4">
+			<div class="col">Fields are just pieces of texts that will be used to render a page.</div>
+			<div class="col-auto">
+				<router-link to="/fields/new" class="btn btn-success">Create new Field</router-link>
+				<button class="btn btn-secondary" v-on:click="loadData">Update</button>
+			</div>
+		</div>
 		<table class="table table-striped">
 			<thead>
 				<tr>
