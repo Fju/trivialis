@@ -46,7 +46,7 @@ class DB {
 			}
 			$result->close();
 		} else {
-			throw new DBException(self::$conn->error);	
+			throw new DBException(self::$conn->error, self::$conn-errno);
 		}
 
 		return $data;

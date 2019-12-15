@@ -1,44 +1,69 @@
 <template>
 	<div class="page">
-		<h2>Edit</h2>
-		<form class="row">
+		<h2>{{ pageTitle }}</h2>
+		<form id="field-form" class="row" v-on:submit="onSubmit">
 			<div class="col-12 form-group">
 				<label>Name:</label>
-				<input type="text" class="form-control" name="name" />
+				<input type="text" class="form-control" v-model="fieldName" />
 			</div>
 			<div class="col-6">
 				<label>Content</label>
-				<textarea class="w-100" v-on:input="compile"></textarea>
+				<textarea class="w-100" v-on:input="compile" v-model="fieldContent"></textarea>
 			</div>
 			<div class="col-6">
 				<label>Preview</label>
-				<div v-html="compiledMarkdown">
+				<div v-html="compiledMarkdown"></div>
+			</div>
+			<div class="col-12">
+				<button type="submit" class="btn btn-primary" v-on:click="onSubmit">Submit</button>
 			</div>
 		</form>
 	</div>
 </template>
 <script>
-	//import { Multipane, MultipaneResizer } from 'vue-multipane';
+	import $ from 'jquery';
 	// TODO: santize output HTML!
 	import marked from 'marked';
+	import { getJWT } from '../js/globals.js';
 
 	var compile_id;
 
 	export default {
 		data () {
 			return {
+				fieldId: '',
+				fieldName: '',
+				fieldContent: '',
+				pageTitle: '',
 				input: ''
 			};
 		},
 		methods: {
-			compile (e) {
-				var value = e.target.value;
-
+			compile () {
 				if (compile_id) clearInterval(compile_id);
 				compile_id = setInterval((function() {
-
-					this.input = value;
+					// update value to trigger re-computing `compiledMarkdown`
+					this.input = this.fieldContent;
 				}).bind(this), 300);
+			},
+			onSubmit (e) {
+				// prevent default behaviour of submitting forms
+				e.preventDefault();
+
+				var token = getJWT();
+				$.ajax({
+					headers: { 'Authorization': 'Bearer ' + token },
+					url: '/backend/fields.php',
+					method: 'POST',
+					data: {
+						id: this.fieldId,
+						name: this.fieldName,
+						content: this.fieldContent,
+						method: 'create'
+					}
+				}).done((function(data) {
+					console.log(data);
+				}).bind(this));
 			}
 		},
 		computed: {
@@ -46,6 +71,15 @@
 				return marked(this.input); 
 			}	
 		},
+		mounted () {
+			this.fieldId = this.$route.params.id;
+			this.fieldName = this.$route.params.name;
+			if (!this.fieldId) {
+				this.pageTitle = 'Create new Field';
+			} else {
+				this.pageTitle = 'Edit Field "' + this.fieldName + '"';
+			}
+		}
 		//components: { Multipane, MultipaneResizer }
 	}
 </script>

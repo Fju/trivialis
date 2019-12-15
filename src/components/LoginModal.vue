@@ -20,8 +20,10 @@
 							<label for="login-password">Password:</label>
 							<input type="password" name="password" id="login-password" class="form-control" />
 						</div>
-						<div class="row">
-							<div class="col"></div>
+						<div class="row align-items-center">
+							<div class="col text-muted">
+								<small>Trivialis CMS v0.0.1</small>
+							</div>
 							<div class="col-auto">
 								<button class="btn btn-primary" id="login-submit" v-on:click="onSubmit">Login</button>
 							</div>

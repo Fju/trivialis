@@ -38,7 +38,8 @@ function createFields() {
 	DB::exec("DROP TABLE IF EXISTS fields");
 	// create fields table
 	DB::exec("CREATE TABLE fields (
-		name VARCHAR(50) NOT NULL PRIMARY KEY,
+		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		name VARCHAR(50) NOT NULL UNIQUE,
 		content TEXT
 	)");
 
