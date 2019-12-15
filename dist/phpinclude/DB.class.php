@@ -2,7 +2,23 @@
 
 require_once "Config.class.php";
 
-class DBException extends Exception {}
+class DBException extends Exception {
+	private $err;
+	private $errno;
+
+	public function __construct($err, $errno) {
+		$this->err = $err;
+		$this->errno = $errno;
+	}
+
+	public function getError() {
+		return $this->err;
+	}
+
+	public function getErrorCode() {
+		return $this->errno;
+	}
+}
 
 class DB {
 	
@@ -46,7 +62,7 @@ class DB {
 			}
 			$result->close();
 		} else {
-			throw new DBException(self::$conn->error, self::$conn-errno);
+			throw new DBException(self::$conn->error, self::$conn->errno);
 		}
 
 		return $data;
@@ -56,7 +72,7 @@ class DB {
 		if ($result = self::$conn->query($sql)) {
 			return $result;
 		} else {
-			throw new DBException(self::$conn->error);
+			throw new DBException(self::$conn->error, self::$conn->errno);
 		}
 	}
 

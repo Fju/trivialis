@@ -16,64 +16,59 @@ function getFields() {
 
 function setFields() {
 	$response = array();
-
-
-	// don't escape if `$id` is empty
-   	if ($id) $id = DB::escape($id);
 	
-	if ($_POST["method"] === "update") {
-		// check parameters
-		if (!isset($_POST["name"]) || !isset($_POST["content"]) || !isset($_POST["id"])) {
-			$response["err"] = "Not enough parameters specified for updating data";
-			return $response;
-		}
+	try {
+		if ($_POST["method"] === "update") {
+			// check parameters
+			if (!isset($_POST["name"]) || !isset($_POST["content"]) || !isset($_POST["id"])) {
+				$response["err"] = "Not enough parameters specified for updating data";
+				return $response;
+			}
 
-		// escape parameters to prevent SQL injections
-		$name = DB::escape($_POST["name"]);
-		$content = DB::escape($_POST["content"]);
-		$id = DB::escape($_POST["id"]);
-		try {	
+			// escape parameters to prevent SQL injections
+			$name = DB::escape($_POST["name"]);
+			$content = DB::escape($_POST["content"]);
+			$id = DB::escape($_POST["id"]);
+
 			DB::exec("UPDATE fields SET name='$name', content='$content' WHERE id = $id");
-		} catch (DBException $e) {
-			$response["err"] = "Database error";
-			$response["err_desc"] = $e->getMessage();
-			$response["err_no"] = $e->getCode();
-		}
-	} else if ($_POST["method"] === "create") {
-		// check parameters
-		if (!isset($_POST["name"]) || !isset($_POST["content"])) {
-			$response["err"] = "Not enough parameters specified for creating new data";
-			return $response;
-		}
+		} else if ($_POST["method"] === "create") {
+			// check parameters
+			if (!isset($_POST["name"]) || !isset($_POST["content"])) {
+				$response["err"] = "Not enough parameters specified for creating new data";
+				return $response;
+			}
 
-		$name = DB::escape($_POST["name"]);
-		$content = DB::escape($_POST["content"]);
-		try {
+			$name = DB::escape($_POST["name"]);
+			$content = DB::escape($_POST["content"]);
+
 			DB::exec("INSERT INTO fields (name, content) VALUES ('$name', '$content')");	
-		} catch (DBException $e) {
-			$response["err"] = "Database error";
-			$response["err_desc"] = $e->getMessage();
-			$response["err_no"] = $e->getCode();
+		} else if ($_POST["method"] === "delete") {
+			// check parameters
+			if (!isset($_POST["id"])) {
+				$response["err"] = "Not enough parameters specified for deleting data";
+				return $response;
+			}
+
+			$id = DB::escape($_POST["id"]);
+		
+			DB::exec("DELETE FROM fields WHERE id = $id");
+		} else {
+			// invalid method parameter provided
+			$response["err"] = "Invalid value for method parameter";
 		}
-	} else if ($_POST["method"] === "delete") {
-		// check parameters
-		if (!isset($_POST["id"])) {
-			$response["err"] = "Not enough parameters specified for deleting data";
+	} catch (DBException $e) {
+		$err_code = $e->getErrorCode();
+		$err_msg = $e->getError();
+
+		if ($err_code === 1062) {
+			// duplicate entry
+			$response["err"] = "Field names must be unique";
 			return $response;
 		}
-
-		$id = DB::escape($_POST["id"]);
-		try {
-			DB::exec("DELETE FROM fields WHERE id = $id");
-		} catch (DBException $e) {
-			$response["err"] = "Database error";
-			$response["err_desc"] = $e->getMessage();
-			$response["err_no"] = $e->getCode();
-		}
-	} else {
-		// invalid method parameter provided
-		$response["err"] = "Invalid value for method parameter";
+		// other error 
+		$response["err"] = "Database error (#$err_code)\n$err_msg";
 	}
+
 	return $response;
 }
 

@@ -35,6 +35,7 @@
 				fieldName: '',
 				fieldContent: '',
 				pageTitle: '',
+				mode: '',
 				input: ''
 			};
 		},
@@ -49,8 +50,8 @@
 			onSubmit (e) {
 				// prevent default behaviour of submitting forms
 				e.preventDefault();
-
 				var token = getJWT();
+
 				$.ajax({
 					headers: { 'Authorization': 'Bearer ' + token },
 					url: '/backend/fields.php',
@@ -59,11 +60,16 @@
 						id: this.fieldId,
 						name: this.fieldName,
 						content: this.fieldContent,
-						method: 'create'
+						method: (this.$route.name === 'Fields/New') ? 'create' : 'update'
 					}
-				}).done((function(data) {
-					console.log(data);
-				}).bind(this));
+				}).done((this.$route.name === 'Fields/New') ? this.handleCreateResponse : this.handleUpdateResponse);
+			},
+			handleCreateResponse (data) {
+				console.log(data);
+				this.$router.push('/fields');
+			},
+			handleUpdateResponse (data) {
+				console.log(data);
 			}
 		},
 		computed: {
