@@ -24,7 +24,7 @@
 	import $ from 'jquery';
 	// TODO: santize output HTML!
 	import marked from 'marked';
-	import { getJWT } from '../js/globals.js';
+	import { getJWT } from '../js/storage.js';
 
 	var compile_id;
 
@@ -50,10 +50,8 @@
 			onSubmit (e) {
 				// prevent default behaviour of submitting forms
 				e.preventDefault();
-				var token = getJWT();
-
 				$.ajax({
-					headers: { 'Authorization': 'Bearer ' + token },
+					headers: { 'Authorization': 'Bearer ' + getJWT() },
 					url: '/backend/fields.php',
 					method: 'POST',
 					data: {

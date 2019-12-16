@@ -9,6 +9,14 @@ header("Content-Type: application/json; charset=utf-8");
 
 function getFields() {
 	$response = array();
+
+	$authorized = Authorizer::authorize();
+	// TODO: return error code (e. g. empty token, malformed token, expired token, etc.)
+	if (!$authorized) {
+		$response["unauth"] = true;
+		return $response;
+	}
+
 	try {
 		if (isset($_POST["id"])) {
 			$id = DB::escape($_POST["id"]);
@@ -27,6 +35,14 @@ function getFields() {
 
 function setFields() {
 	$response = array();
+
+	$authorized = Authorizer::authorize();
+	// TODO: return error code (e. g. empty token, malformed token, expired token, etc.)
+	if (!$authorized) {
+		$response["unauth"] = true;
+		return $response;
+	}
+
 	try {
 		if ($_POST["method"] === "update") {
 			// check parameters
@@ -83,13 +99,9 @@ function setFields() {
 }
 
 
-if (!Authorizer::authorize()) {
-	echo "{ \"auth\": false }";
-} else {
-	$method = $_SERVER["REQUEST_METHOD"];
-	if ($method === "GET") {
-		echo json_encode(getFields(), JSON_UNESCAPED_UNICODE);
-	} else if ($method === "POST") {
-		echo json_encode(setFields(), JSON_UNESCAPED_UNICODE);
-	}
+$method = $_SERVER["REQUEST_METHOD"];
+if ($method === "GET") {
+	echo json_encode(getFields(), JSON_UNESCAPED_UNICODE);
+} else if ($method === "POST") {
+	echo json_encode(setFields(), JSON_UNESCAPED_UNICODE);
 }

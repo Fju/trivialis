@@ -20,7 +20,10 @@
 			<tbody>
 				<tr v-for="row in rows">
 					<td>{{ row.name }} ({{ row.id }})</td>
-					<td>{{ row.content }}</td>
+					<td>
+						{{ row.content }}
+						<i class="text-muted" v-if="!row.content">no content</i>
+					</td>
 					<td class="small-row">
 						<router-link :to="row.to" class="btn btn-primary btn-sm">Edit</router-link>
 						<button class="btn btn-danger btn-sm" v-on:click="onDeleteClick(row.id)">Delete</button>
@@ -33,14 +36,12 @@
 <script>
 	import $ from 'jquery';
 	import { router } from '../js/router.js';
-	import { getJWT } from '../js/globals.js';
+	import { getJWT } from '../js/storage.js';
 
 	export default {
 		data () {
 			return {
-				rows: [
-					// Test data
-				]
+				rows: []
 			};
 		},
 		methods: {

@@ -37,7 +37,8 @@
 <script>
 	import $ from 'jquery';
 
-	import { events, setJWT } from '../js/globals.js';
+	//import { events } from '../js/globals.js';
+	import { setJWT, getJWT } from '../js/storage.js';
 
 	export default {
 		data () {
@@ -48,43 +49,42 @@
 		},
 		methods: {
 			onSubmit (e) {
-				console.log(e);
 				// prevent submitting the form
 				e.preventDefault();
 				$.post('/backend/login.php', $('#login-form').serialize()).done((function(data) {
 					if (data.err) {
 						this.error = true;
 						this.error_message = data.err;
-						
 						// clear password input
 						$('#login-password').val('');
 					} else {
 						this.error = false;
-
-						console.log(data);
-
 						setJWT(data.token);
 
+						this.$emit('successful-login');
 						this.closeDialog();
 					}
 				}).bind(this));
 			},
 			openDialog () {
-				$('#login-modal').modal('show');
+				$('#login-modal').modal({
+					// disable dismissing the modal when clicking on the backdrop
+					backdrop: 'static',
+					// disable dismissing the modal when pressing ESC
+					keyboard: false,
+					show: true
+				});
 			},
 			closeDialog () {
 				$('#login-modal').modal('hide');
 			}
 		},
 		mounted () {
-			// disable dismissing the dialog by clicking into the backdrop or pressing ESC
-			$('#login-modal').modal({
-				backdrop: 'static',
-				keyboard: false
-			});
-			
-			// listen on `open-login` event
-			//events.$on('open-login', this.openDialog);
+			// TODO: maybe move to another script
+			if (!getJWT()) {
+				// no web token, login required
+				this.openDialog();	
+			}
 		}
 	}
 </script>
