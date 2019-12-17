@@ -6,13 +6,13 @@
 			<router-view></router-view>
 		</div>
 	</div>
+
 </template>
 <script>
 	import { router } from './js/router.js';
 
 	import Navigation from './components/Navigation.vue';
 	import Toolbar from './components/Toolbar.vue';
-
 	
 	export default {
 		data () {

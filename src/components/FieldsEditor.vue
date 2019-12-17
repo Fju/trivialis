@@ -25,7 +25,7 @@
 	// TODO: santize output HTML!
 	import marked from 'marked';
 	import { getJWT } from '../js/storage.js';
-	import { getField, modifyField } from '../js/fields.js';
+	import { getField, modifyField, fetchFields } from '../js/fields.js';
 
 	var compile_id;
 
@@ -65,6 +65,25 @@
 					modifyField(parameters, this.handleUpdateResponse);
 				}
 			},
+			loadField (attempt) {
+				var field = getField(this.fieldId);
+
+				if (!field) {
+					if (attempt === 1) {
+						// unable to load field, go back to fields page
+						this.$router.push('/fields');
+					}
+					fetchFields((function() {
+						this.loadField(attempt + 1);
+					}).bind(this));
+				} else {
+					this.fieldName = field.name;
+					this.fieldContent = field.content;
+					this.compile();
+
+					this.pageTitle = 'Edit Field "' + this.fieldName + '"';
+				}
+			},
 			handleCreateResponse (data) {
 				console.log(data);
 				this.$router.push('/fields');
@@ -84,13 +103,7 @@
 			if (!this.fieldId) {
 				this.pageTitle = 'Create new Field';
 			} else {
-				var field = getField(this.fieldId);
-
-				this.fieldName = field.name;
-				this.fieldContent = field.content;
-				this.compile();
-
-				this.pageTitle = 'Edit Field "' + this.fieldName + '"';
+				this.loadField(0);
 			}
 		}
 		//components: { Multipane, MultipaneResizer }
