@@ -9,11 +9,11 @@ header("Content-Type: application/json; charset=utf-8");
 
 function getFields() {
 	$response = array();
-
+	
 	$authorized = Authorizer::authorize();
 	// TODO: return error code (e. g. empty token, malformed token, expired token, etc.)
-	if (!$authorized) {
-		$response["unauth"] = true;
+	if ($authorized !== Authorizer::JWT_VALID) {
+		$response["unauth"] = $authorized;
 		return $response;
 	}
 
@@ -38,8 +38,8 @@ function setFields() {
 
 	$authorized = Authorizer::authorize();
 	// TODO: return error code (e. g. empty token, malformed token, expired token, etc.)
-	if (!$authorized) {
-		$response["unauth"] = true;
+	if ($authorized !== Authorizer::JWT_VALID) {
+		$response["unauth"] = $authorized;
 		return $response;
 	}
 
