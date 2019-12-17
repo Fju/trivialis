@@ -1,5 +1,3 @@
-var fields = [];
-
 export function getJWT() {
 	return sessionStorage.getItem('jwt');
 }
@@ -7,3 +5,4 @@ export function getJWT() {
 export function setJWT(token) {
 	sessionStorage.setItem('jwt', token);
 }
+

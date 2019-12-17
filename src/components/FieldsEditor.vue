@@ -25,6 +25,7 @@
 	// TODO: santize output HTML!
 	import marked from 'marked';
 	import { getJWT } from '../js/storage.js';
+	import { getField, modifyField } from '../js/fields.js';
 
 	var compile_id;
 
@@ -35,7 +36,6 @@
 				fieldName: '',
 				fieldContent: '',
 				pageTitle: '',
-				mode: '',
 				input: ''
 			};
 		},
@@ -50,17 +50,20 @@
 			onSubmit (e) {
 				// prevent default behaviour of submitting forms
 				e.preventDefault();
-				$.ajax({
-					headers: { 'Authorization': 'Bearer ' + getJWT() },
-					url: '/backend/fields.php',
-					method: 'POST',
-					data: {
-						id: this.fieldId,
-						name: this.fieldName,
-						content: this.fieldContent,
-						method: (this.$route.name === 'Fields/New') ? 'create' : 'update'
-					}
-				}).done((this.$route.name === 'Fields/New') ? this.handleCreateResponse : this.handleUpdateResponse);
+
+				var parameters = {
+					id: this.fieldId,
+					name: this.fieldName,
+					content: this.fieldContent
+				};
+
+				if (this.$route.name === 'Fields/New') {
+					parameters.method = 'create';
+					modifyField(parameters, this.handleCreateResponse);
+				} else {
+					parameters.method = 'update';
+					modifyField(parameters, this.handleUpdateResponse);
+				}
 			},
 			handleCreateResponse (data) {
 				console.log(data);
@@ -73,14 +76,20 @@
 		computed: {
 			compiledMarkdown () {
 				return marked(this.input); 
-			}	
+			}
 		},
 		mounted () {
 			this.fieldId = this.$route.params.id;
-			this.fieldName = this.$route.params.name;
+
 			if (!this.fieldId) {
 				this.pageTitle = 'Create new Field';
 			} else {
+				var field = getField(this.fieldId);
+
+				this.fieldName = field.name;
+				this.fieldContent = field.content;
+				this.compile();
+
 				this.pageTitle = 'Edit Field "' + this.fieldName + '"';
 			}
 		}

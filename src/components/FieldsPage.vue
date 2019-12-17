@@ -35,8 +35,8 @@
 </template>
 <script>
 	import $ from 'jquery';
-	import { router } from '../js/router.js';
 	import { getJWT } from '../js/storage.js';
+	import { fetchFields, modifyField } from '../js/fields.js';
 
 	export default {
 		data () {
@@ -46,29 +46,19 @@
 		},
 		methods: {
 			loadData () {
-				$.ajax({ headers: { 'Authorization': 'Bearer ' + getJWT() }, url: '/backend/fields.php' }).done((function(data) {
+				fetchFields((function(data) {
+					if (data.err) console.log(data.err);
 					if (data.fields) this.rows = data.fields.map(field => {
 						field.to = { name: 'Fields/Edit', params: { id: field.id, name: field.name } };
 						return field;
-					});
+					});		
 				}).bind(this));
 			},
 			onDeleteClick (id) {
-				$.ajax({
-					headers: { 'Authorization': 'Bearer ' + getJWT() },
-					url: '/backend/fields.php',
-					method: 'POST',
-					data: {
-						id: id,
-						method: 'delete'
-					}
-				}).done((function(data) {
-					console.log('deleting id=' + id, data);
-
-					// trigger update
-					this.loadData();
+				modifyField({ id: id, method: 'delete' }, (function(data) {
+					if (data.err) console.log('Error when deleting: ' + data.err);
+					else this.loadData();
 				}).bind(this));
-
 			}
 		},
 		mounted () {

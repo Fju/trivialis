@@ -18,12 +18,7 @@ function getFields() {
 	}
 
 	try {
-		if (isset($_POST["id"])) {
-			$id = DB::escape($_POST["id"]);
-			$response["fields"] = DB::query("SELECT * FROM fields WHERE id = $id");
-		} else {
-			$response["fields"] = DB::query("SELECT * FROM fields");
-		}
+		$response["fields"] = DB::query("SELECT * FROM fields");
 	} catch (DBException $e) {
 		$err_code = $e->getErrorCode();
 		$err_msg = $e->getError();
