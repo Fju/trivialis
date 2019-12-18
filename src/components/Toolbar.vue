@@ -10,9 +10,9 @@
 			<div class="col"></div>
 			<div class="col-auto">
 				<div class="dropdown">
-					<a class="text-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+					<a class="text-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ name }}</a>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-						<a class="dropdown-item" href="#">Logout</a>
+						<a class="dropdown-item" href="#" v-on:click="onLogoutClick">Logout</a>
 					</div>
 				</div>	
 			</div>
@@ -20,9 +20,13 @@
 	</div>
 </template>
 <script>
+	import { events } from '../js/globals.js';
+	import { getJWTBody, removeJWT } from '../js/storage.js';
+
 	export default {
 		data () {
 			return {
+				name: '',
 				items: []
 			}
 		},
@@ -31,6 +35,13 @@
 				if (typeof this.$route.name	=== 'string') {
 					this.items = this.$route.name.split('/');
 				}
+			},
+			onLoginSuccessful () {
+				var info = getJWTBody();
+				if (info.usr) this.name = info.usr;	
+			},
+			onLogoutClick () {
+				removeJWT();
 			}
 		},
 		watch: {
@@ -40,6 +51,9 @@
 		},
 		mounted () {
 			this.updateBreadcrumbs();
+			events.$on('login-successful', this.onLoginSuccessful);	
+
+			this.onLoginSuccessful();
 		}
 	}
 </script>

@@ -37,7 +37,7 @@
 <script>
 	import $ from 'jquery';
 
-	//import { events } from '../js/globals.js';
+	import { events } from '../js/globals.js';
 	import { setJWT, getJWT } from '../js/storage.js';
 
 	export default {
@@ -61,7 +61,7 @@
 						this.error = false;
 						setJWT(data.token);
 
-						this.$emit('successful-login');
+						events.$emit('login-successful');
 						this.closeDialog();
 					}
 				}).bind(this));

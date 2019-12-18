@@ -28,7 +28,7 @@ function checkLogin($username, $password) {
 				$response["token"] = JWT::encode(array(
 					"iat" => time(), // issued at
 					"exp" => time() + 1000 * 60 * 30, // expiration time
-					"iss" => "trivialis"
+					"usr" => $username
 				), Config::getJWTKey());
 			} else {
 				// invalid password
