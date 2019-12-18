@@ -26,11 +26,28 @@
 					</td>
 					<td class="small-row">
 						<router-link :to="row.to" class="btn btn-primary btn-sm">Edit</router-link>
-						<button class="btn btn-danger btn-sm" v-on:click="onDeleteClick(row.id)">Delete</button>
+						<button class="btn btn-danger btn-sm" v-on:click="onDeleteClick(row.id, row.name)">Delete</button>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+		<div class="modal fade" id="delete-field-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">Do you really want to delete field "{{ deleteFieldName }}"</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-danger" v-on:click="onDeleteSubmit">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 <script>
@@ -41,6 +58,8 @@
 	export default {
 		data () {
 			return {
+				deleteFieldName: '',
+				deleteFieldId: '',
 				rows: []
 			};
 		},
@@ -49,13 +68,19 @@
 				fetchFields((function(data) {
 					if (data.err) console.log(data.err);
 					if (data.fields) this.rows = data.fields.map(field => {
-						field.to = { name: 'Fields/Edit', params: { id: field.id, name: field.name } };
+						field.to = { name: 'Fields/Edit', params: { id: field.id } };
 						return field;
 					});		
 				}).bind(this));
 			},
-			onDeleteClick (id) {
-				modifyField({ id: id, method: 'delete' }, (function(data) {
+			onDeleteClick (id, name) {
+				this.deleteFieldId = id;
+				this.deleteFieldName = name;
+				$('#delete-field-modal').modal('show');
+			},
+			onDeleteSubmit () {
+				$('#delete-field-modal').modal('hide');
+				modifyField({ id: this.deleteFieldId, method: 'delete' }, (function(data) {
 					if (data.err) console.log('Error when deleting: ' + data.err);
 					else this.loadData();
 				}).bind(this));
