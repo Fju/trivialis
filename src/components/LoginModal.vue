@@ -60,13 +60,15 @@
 					} else {
 						this.error = false;
 						setJWT(data.token);
-
+						
 						events.$emit('login-successful');
 						this.closeDialog();
 					}
 				}).bind(this));
 			},
-			openDialog () {
+			openDialog (msg) {
+				// clear input values
+				$('#login-form input').val('');
 				$('#login-modal').modal({
 					// disable dismissing the modal when clicking on the backdrop
 					backdrop: 'static',
@@ -85,6 +87,7 @@
 				// no web token, login required
 				this.openDialog();	
 			}
+			events.$on('open-login', this.openDialog);
 		}
 	}
 </script>

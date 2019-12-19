@@ -5,7 +5,7 @@ export function getJWTBody() {
 }
 
 export function getJWT() {
-	return sessionStorage.getItem('jwt');
+	return sessionStorage.getItem('jwt') || '';
 }
 
 export function setJWT(token) {

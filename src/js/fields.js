@@ -1,5 +1,4 @@
-import $ from 'jquery';
-import { getJWT } from '../js/storage.js';
+import { request } from './globals.js';
 
 var fields = [];
 
@@ -14,24 +13,14 @@ export function getField(id) {
 }
 
 export function fetchFields(callback) {
-	$.ajax({
-		headers: { 'Authorization': 'Bearer ' + getJWT() },
-		url: '/backend/fields.php',
-		method: 'GET',
-	}).done(data => {
+	request({ url: '/backend/fields.php', method: 'GET' }, data => {
 		if (data.fields) fields = data.fields;
 		if (typeof callback === 'function') callback(data);
-
 	});
 }
 
 export function modifyField(parameters, callback) {
-	$.ajax({
-		headers: { 'Authorization': 'Bearer ' + getJWT() },
-		url: '/backend/fields.php',
-		method: 'POST',
-		data: parameters
-	}).done(data => {
+	request({ url: '/backend/fields.php', method: 'POST', data: parameters }, data => {
 		if (typeof callback === 'function') callback(data);	
 	});
 }
