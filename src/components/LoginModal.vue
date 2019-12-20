@@ -67,6 +67,10 @@
 				}).bind(this));
 			},
 			openDialog (msg) {
+				if (msg) {
+					this.error = true;
+					this.error_message = 'Authorization required!';
+				}
 				// clear input values
 				$('#login-form input').val('');
 				$('#login-modal').modal({
@@ -76,6 +80,7 @@
 					keyboard: false,
 					show: true
 				});
+				
 			},
 			closeDialog () {
 				$('#login-modal').modal('hide');
@@ -85,7 +90,7 @@
 			// TODO: maybe move to another script
 			if (!getJWT()) {
 				// no web token, login required
-				this.openDialog();	
+				this.openDialog();
 			}
 			events.$on('open-login', this.openDialog);
 		}
