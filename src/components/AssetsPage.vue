@@ -1,15 +1,16 @@
 <template>
 	<div class="page h-100">
+		<input type="file" multiple hidden id="file-input" />
 		<h1>Assets</h1>
 		<p>Upload files to the server</p>
 		<div class="row">
-			<div class="col-12">
-				<file-pond v-bind:files="files" allow-multiple="true"></file-pond>
+			<div class="col">
+			</div>
+			<div class="col-auto">
+				<button class="btn btn-success" v-on:click="onUploadClick">Upload file(s)</button>
 			</div>
 		</div>
-		<p>Current Assets</p>
-		<button v-on:click="onClick">Test</button>
-		<table>
+		<!--<table>
 			<thead>
 				<tr>
 					<th>Name</th>
@@ -18,21 +19,15 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="file in files">
-					<td>{{ file.filename }}</td>
-					<td>{{ file.fileSize }}</td>
-					<td>
-						<button class="btn btn-sm btn-danger">Delete</button>
-					</td>
-				</tr>
 			</tbody>
-		</table>
+		</table>-->
 	</div>
 </template>
 <script>
-	import vueFilePond from 'vue-filepond';
-	
-	const FilePond = vueFilePond();
+	import $ from 'jquery';
+	import { request } from '../js/globals.js';
+
+	const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
 
 	export default {
 		data () {
@@ -41,10 +36,28 @@
 			}
 		},
 		methods: {
-			onClick () {
-				console.log(this.files);
+			onUploadClick () {
+				$('#file-input').click();
 			}
 		},
-		components: { FilePond }
+		mounted () {
+			$('#file-input').on('change', e => {
+				var files = e.target.files;
+				for (var i = 0; i < files.length; ++i) { 
+					if (files[i].size > MAX_FILE_SIZE) console.log('File too big');
+
+					var data = new FormData();
+					data.append('file', files[i]);
+			
+					request({ url: '/backend/assets.php',
+						data: data,
+						processData: false,
+						contentType: false,
+						method: 'POST' }, d => {
+						console.log('upload', d);
+					});
+				}
+			});
+		}
 	}
 </script>

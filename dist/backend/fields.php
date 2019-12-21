@@ -3,8 +3,9 @@
 require_once "DB.class.php";
 require_once "Authorizer.class.php";
 
-// JSON format
+// header information
 header("Content-Type: application/json; charset=utf-8");
+header("Access-Control-Allow-Methods: GET, POST");
 
 
 function getFields() {
