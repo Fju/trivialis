@@ -10,8 +10,8 @@ export const routes = [
 	{ path: '/fields', name: 'Fields', component: FieldsPage },
 	{ path: '/fields/new', name: 'Fields/New', component: FieldsEditor },
 	{ path: '/fields/edit/:id', name: 'Fields/Edit', component: FieldsEditor },
-	{ path: '/pages', name: 'Pages', component: AssetsPage },
-	{ path: '/assets', name: 'Assets', component: BlankPage },
+	{ path: '/pages', name: 'Pages', component: BlankPage },
+	{ path: '/assets', name: 'Assets', component: AssetsPage },
 	{ path: '/statistics', name: 'Statistics', component: BlankPage }
 ];
 

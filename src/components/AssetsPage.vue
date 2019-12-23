@@ -25,7 +25,7 @@
 </template>
 <script>
 	import $ from 'jquery';
-	import { request } from '../js/globals.js';
+	import { uploadFile } from '../js/assets.js';
 
 	const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
 
@@ -36,6 +36,9 @@
 			}
 		},
 		methods: {
+			loadData () {
+			
+			},
 			onUploadClick () {
 				$('#file-input').click();
 			}
@@ -45,16 +48,8 @@
 				var files = e.target.files;
 				for (var i = 0; i < files.length; ++i) { 
 					if (files[i].size > MAX_FILE_SIZE) console.log('File too big');
-
-					var data = new FormData();
-					data.append('file', files[i]);
-			
-					request({ url: '/backend/assets.php',
-						data: data,
-						processData: false,
-						contentType: false,
-						method: 'POST' }, d => {
-						console.log('upload', d);
+					else uploadFile(files[i], data => {
+						console.log('upload file', data);
 					});
 				}
 			});
