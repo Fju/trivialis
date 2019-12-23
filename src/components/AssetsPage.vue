@@ -10,22 +10,23 @@
 				<button class="btn btn-success" v-on:click="onUploadClick">Upload file(s)</button>
 			</div>
 		</div>
-		<!--<table>
+		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>Name</th>
-					<th>Content</th>
-					<th></th>
 				</tr>
 			</thead>
 			<tbody>
+				<tr v-for="file in files">
+					<td>{{ file }}</td>
+				</tr>
 			</tbody>
-		</table>-->
+		</table>
 	</div>
 </template>
 <script>
 	import $ from 'jquery';
-	import { uploadFile } from '../js/assets.js';
+	import { uploadFile, getFiles } from '../js/assets.js';
 
 	const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
 
@@ -37,13 +38,18 @@
 		},
 		methods: {
 			loadData () {
-			
+				getFiles((function(data) {
+					console.log(data);
+					this.files = data.files;
+				}).bind(this));
 			},
 			onUploadClick () {
 				$('#file-input').click();
 			}
 		},
 		mounted () {
+			this.loadData();
+
 			$('#file-input').on('change', e => {
 				var files = e.target.files;
 				for (var i = 0; i < files.length; ++i) { 

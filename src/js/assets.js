@@ -15,3 +15,9 @@ export function uploadFile(file, callback) {
 		if (typeof callback === 'function') callback(d);
 	});
 }
+
+export function getFiles(callback) {
+	request({ url: '/backend/assets.php', method: 'GET' }, data => {
+		if (typeof callback === 'function') callback(data);
+	});
+}

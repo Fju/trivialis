@@ -62,6 +62,13 @@ class Config {
 		return self::$config["db"]["name"];
 	}
 
+	public static function getAssetsDir() {
+		if (!isset(self::$config["files"]["assets_dir"])) {
+			throw new InvalidConfigurationException();
+		}
+		return $_SERVER["DOCUMENT_ROOT"] . "/" . self::$config["files"]["assets_dir"];
+	}
+
 }
 
 Config::init("../config.yml");
