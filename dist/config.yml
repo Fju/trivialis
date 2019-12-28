@@ -15,4 +15,3 @@ users:
     role: "other"
 files:
   assets_dir: "assets"
-  assets_tmp_dir: "assets/tmp"

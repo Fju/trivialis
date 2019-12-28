@@ -20,5 +20,11 @@ class Files {
 			// couldn't open directory
 			return [];
 		}	
-	}	
+	}
+
+	public static function getUploadFilename($filename) {
+		// TODO: santize filenames
+		return Config::getAssetsDir() . "/" . $filename;
+	}
+
 }
