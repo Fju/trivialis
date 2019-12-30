@@ -20,12 +20,16 @@
 			</thead>
 			<tbody>
 				<tr v-for="file in files" :class="{ 'row-danger': file.state === 'error', 'row-pending': file.state === 'uploading' }">
-					<td>{{ file.name }}</td>
+					<td>
+						{{ file.name }}
+						<div v-if="file.state === 'error'" class="my-2">{{ file.err }}</div>
+					</td>
 					<td>{{ file.size }}</td>
 					<td class="small-col" v-if="file.state !== 'ok'">
 						<div v-if="file.state === 'uploading'" class="spinner-border spinner-border-sm" role="status">
 							<span class="sr-only">Uploading</span>
 						</div>
+						<button type="button" class="close" v-if="file.state === 'error'" v-on:click="file.until = 0"><span>&times;</span></button>
 					</td>
 					<td class="small-col" v-else>
 						<button class="btn btn-primary btn-sm">Rename</button>
@@ -107,6 +111,14 @@
 		mounted () {
 			this.loadData();
 
+			setInterval((function() {
+				// filter files array
+				this.files = this.files.filter(item => {
+					if (typeof item.until !== 'number') return true;
+					else return item.until > Date.now();
+				});
+			}).bind(this), 100);
+
 			$('#file-input').on('change', (function(e) {
 				var files = e.target.files;
 				for (var i = 0; i < files.length; ++i) { 
@@ -116,13 +128,21 @@
 						continue;
 					}
 
-					this.files.unshift({
+					var file = {
 						name: files[i].name,
 						size: formatFilesize(files[i].size),
 						state: 'uploading'
-					});
+					};
+
+					this.files.unshift(file);
 					uploadFile(files[i], (function(data) {
 						console.log('upload file', data);
+						if (data.err) {
+							file.state = 'error';
+							file.err = data.err;
+							file.until = Date.now() + 10 * 1000;
+							console.log(file.until, Date.now());
+						} else file.state = 'ok';
 						// update table
 						//this.loadData();
 					}).bind(this));

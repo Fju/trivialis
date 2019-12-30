@@ -20,6 +20,10 @@ function uploadFile() {
 	if ($_POST["method"] === "upload") {
 		try {
 			$filename = Files::getUploadFilename($_FILES["file"]["name"]);
+			if (file_exists($filename)) {
+				$response["err"] = "Filename already exists";
+				return $response;
+			}
 			move_uploaded_file($_FILES["file"]["tmp_name"], $filename);
 		} catch (Exception $e) {
 			$response["err"] = "Unable to save uploaded file!";
