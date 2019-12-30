@@ -24,18 +24,18 @@
 						{{ row.content }}
 						<i class="text-muted" v-if="!row.content">no content</i>
 					</td>
-					<td class="small-row">
+					<td class="small-col">
 						<router-link :to="row.to" class="btn btn-primary btn-sm">Edit</router-link>
 						<button class="btn btn-danger btn-sm" v-on:click="onDeleteClick(row.id, row.name)">Delete</button>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<div class="modal fade" id="delete-field-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal fade" id="delete-field-modal" tabindex="-1" role="dialog" aria-labelledby="delete-field-modal-label" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+						<h5 class="modal-title" id="delete-field-modal-label">Are you sure?</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>

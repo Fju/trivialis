@@ -60,9 +60,18 @@
 	}
 }
 
-.table .small-row {
-	white-space: nowrap;
-	width: 1px;
+.table tbody {
+	tr.row-danger {
+		background-color: rgba($red, .15);
+	}
+	tr.row-pending {
+		background-color: rgba($blue, .15);
+	}
+
+	.small-col {
+		white-space: nowrap;
+		width: 1px;
+	}
 }
 textarea {
 	font-family: monospace;

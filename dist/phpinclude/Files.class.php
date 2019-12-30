@@ -7,10 +7,22 @@ class Files {
 	public static function getFiles() {
 		$files = [];
 		try {
+			
 			if ($dir = opendir(Config::getAssetsDir())) {
 				while (false !== ($entry = readdir($dir))) {
+					// skip `..` and `.`
 					if ($entry === ".." || $entry === ".") continue;
-					$files[] = $entry;
+
+					$path = Config::getAssetsDir()."/$entry";
+					
+					// skip directories, etc.
+					if (!is_file($path)) continue;
+
+						
+					$files[] = array(
+						"name" => $entry,
+						"size" => filesize($path)
+					);
 				}
 
 				closedir($dir);
