@@ -24,7 +24,8 @@
 					<td>
 						<span :class="{ hidden: file.state === 'rename' }">{{ file.name }}</span>
 						<div class="form-inline" :class="{ hidden: file.state !== 'rename' }">
-							<input class="form-control" type="text" id="file-rename" v-model="file.new_name" v-on:keypress.enter="onRenameSubmit(file)" />
+							<input class="form-control" type="text" v-model="file.new_name" 
+								v-on:keydown.enter="onRenameSubmit(file)" v-on:keydown.esc="onRenameCancel(file)" />
 						</div>
 						<div v-if="file.state === 'error'" class="my-2">{{ file.err }}</div>
 					</td>
@@ -65,7 +66,8 @@
 	import $ from 'jquery';
 	import { uploadFile, deleteFile, renameFile, getFiles } from '../js/assets.js';
 
-	const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
+	const MAX_FILE_SIZE = 25 * 1024 * 1024; // 1 MB
+	const ERROR_LIFESPAN = 7 * 1000; // 7 seconds
 
 	function formatFilesize(size) {
 		var i = 0;
@@ -76,10 +78,10 @@
 
 		var suffix = 'B';
 		switch(i) {
-			case 1: suffix = 'KB';
-			case 2: suffix = 'MB';
-			case 3: suffix = 'GB';
-			case 4: suffix = 'TB';
+			case 1: suffix = 'KB'; break;
+			case 2: suffix = 'MB'; break;
+			case 3: suffix = 'GB'; break;
+			case 4: suffix = 'TB'; break;
 		}
 	
 		if (i === 0) return size + ' ' + suffix;
@@ -115,12 +117,6 @@
 			onRenameClick (file) {
 				file.state = 'rename';
 				file.new_name = file.name;
-
-				var pos = file.new_name.lastIndexOf('.');
-				if (pos < 0) pos = file.new_name.length;
-
-				console.log($('#file-rename').focus());
-				//.setSelectionRange(0, pos);
 			},
 			onDeleteSubmit () {
 				$('#delete-assets-modal').modal('hide');	
@@ -136,9 +132,11 @@
 					renameFile(file.name, file.new_name, (function(data) {
 						file.state = 'ok';
 						this.update();
-						
 					}).bind(this));	
 				}
+			},
+			onRenameCancel (file) {
+				file.state = 'ok';
 			}
 		},
 		mounted () {
@@ -153,33 +151,29 @@
 			}).bind(this), 100);
 
 			$('#file-input').on('change', (function(e) {
-				var files = e.target.files;
-				for (var i = 0; i < files.length; ++i) { 
-					if (files[i].size > MAX_FILE_SIZE) {
-						// TODO: show error message
-						console.log('File too big');
-						continue;
-					}
-
+				[].forEach.call(e.target.files, (function(f) { 
 					var file = {
-						name: files[i].name,
-						size: formatFilesize(files[i].size),
+						name: f.name,
+						size: formatFilesize(f.size),
 						state: 'uploading'
 					};
 
 					this.files.unshift(file);
-					uploadFile(files[i], (function(data) {
-						console.log('upload file', data);
+			
+					if (f.size > MAX_FILE_SIZE) {
+						file.state = 'error';
+						file.err = 'File is too big!';
+						file.until = Date.now() + ERROR_LIFESPAN;
+						return;
+					}
+					uploadFile(f, (function(data) {
 						if (data.err) {
 							file.state = 'error';
 							file.err = data.err;
-							file.until = Date.now() + 10 * 1000;
-							console.log(file.until, Date.now());
+							file.until = Date.now() + ERROR_LIFESPAN;
 						} else file.state = 'ok';
-						// update table
-						//this.update();
 					}).bind(this));
-				}
+				}).bind(this));
 			}).bind(this));
 		}
 	}

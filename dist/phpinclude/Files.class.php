@@ -31,7 +31,17 @@ class Files {
 
 	public static function getUploadFilename($filename) {
 		// TODO: santize filenames
-		return Config::getAssetsDir() . "/" . $filename;
+		return Config::getAssetsDir() . "/" . self::santizeFilename($filename);
+	}
+
+	public static function santizeFilename($filename) {
+		// santize filename, illegal characters will be removed
+		// allowed: A-Z, a-z, 0-9 and special characters like -._~,;[]()
+		// multiple occurences of dots (.) will be replaced with a single dot
+		$filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", "", $filename);
+		$filename = mb_ereg_replace("([\.]{2,})", ".", $filename);
+
+		return $filename;
 	}
 
 	public static function deleteFile($filename) {
@@ -46,6 +56,6 @@ class Files {
 			throw new Exception("File already exists");
 		}
 
-		rename($old, $new);		
+		rename($old, $new);
 	}
 }
