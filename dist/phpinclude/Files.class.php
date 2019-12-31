@@ -6,37 +6,34 @@ class Files {
 
 	public static function getFiles() {
 		$files = [];
-		try {
-			
-			if ($dir = opendir(Config::getAssetsDir())) {
-				while (false !== ($entry = readdir($dir))) {
-					// skip `..` and `.`
-					if ($entry === ".." || $entry === ".") continue;
 
-					$path = Config::getAssetsDir()."/$entry";
+		if ($dir = opendir(Config::getAssetsDir())) {
+			while (false !== ($entry = readdir($dir))) {
+				// skip `..` and `.`
+				if ($entry === ".." || $entry === ".") continue;
+
+				$path = self::getUploadFilename($entry);
+				
+				// skip directories, etc.
+				if (!is_file($path)) continue;
 					
-					// skip directories, etc.
-					if (!is_file($path)) continue;
-
-						
-					$files[] = array(
-						"name" => $entry,
-						"size" => filesize($path)
-					);
-				}
-
-				closedir($dir);
+				$files[] = array(
+					"name" => $entry,
+					"size" => filesize($path)
+				);
 			}
-			return $files;
-		} catch (InvalidConfigurationException $e) {
-			// couldn't open directory
-			return [];
-		}	
+			closedir($dir);
+		}
+		return $files;
 	}
 
 	public static function getUploadFilename($filename) {
 		// TODO: santize filenames
 		return Config::getAssetsDir() . "/" . $filename;
+	}
+
+	public static function deleteFile($filename) {
+		unlink(self::getUploadFilename($filename));
 	}
 
 }

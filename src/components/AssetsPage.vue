@@ -8,6 +8,7 @@
 			</div>
 			<div class="col-auto">
 				<button class="btn btn-success" v-on:click="onUploadClick">Upload file(s)</button>
+				<button class="btn btn-secondary" v-on:click="update">Update</button>
 			</div>
 		</div>
 		<table class="table table-striped">
@@ -32,8 +33,8 @@
 						<button type="button" class="close" v-if="file.state === 'error'" v-on:click="file.until = 0"><span>&times;</span></button>
 					</td>
 					<td class="small-col" v-else>
-						<button class="btn btn-primary btn-sm">Rename</button>
-						<button class="btn btn-danger btn-sm">Delete</button>
+						<button class="btn btn-primary btn-sm" v-on:click="onRenameClick(file)">Rename</button>
+						<button class="btn btn-danger btn-sm" v-on:click="openDeleteModal(file)">Delete</button>
 					</td>
 				</tr>
 			</tbody>
@@ -59,7 +60,7 @@
 </template>
 <script>
 	import $ from 'jquery';
-	import { uploadFile, getFiles } from '../js/assets.js';
+	import { uploadFile, deleteFile, getFiles } from '../js/assets.js';
 
 	const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
 
@@ -90,7 +91,7 @@
 			}
 		},
 		methods: {
-			loadData () {
+			update () {
 				getFiles((function(data) {
 					console.log(data);
 					if (typeof data.files === 'object') this.files = data.files.map(item => {
@@ -104,12 +105,20 @@
 			onUploadClick () {
 				$('#file-input').click();
 			},
+			openDeleteModal (file) {
+				this.deleteFilename = file.name;
+				$('#delete-assets-modal').modal('show');
+			},
 			onDeleteSubmit () {
-			
+				$('#delete-assets-modal').modal('hide');	
+				deleteFile(this.deleteFilename, (function(data) {
+					if (data.err) console.log(data.err);
+					else this.update();
+				}).bind(this));
 			}
 		},
 		mounted () {
-			this.loadData();
+			this.update();
 
 			setInterval((function() {
 				// filter files array
@@ -144,7 +153,7 @@
 							console.log(file.until, Date.now());
 						} else file.state = 'ok';
 						// update table
-						//this.loadData();
+						//this.update();
 					}).bind(this));
 				}
 			}).bind(this));

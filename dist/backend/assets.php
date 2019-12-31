@@ -14,7 +14,7 @@ function getFiles() {
 	return $response;
 }
 
-function uploadFile() {
+function modifyFiles() {
 	$response = array();
 
 	if ($_POST["method"] === "upload") {
@@ -25,8 +25,22 @@ function uploadFile() {
 				return $response;
 			}
 			move_uploaded_file($_FILES["file"]["tmp_name"], $filename);
+		} catch (InvalidConfigurationException $e) {
+			$response["err"] = "Trivialis is configured improperly";
+			return $response;
 		} catch (Exception $e) {
 			$response["err"] = "Unable to save uploaded file!";
+			return $response;
+		}
+	} else if ($_POST["method"] === "delete") {
+		if (!isset($_POST["name"])) {
+			$response["err"] = "Not enough parameters provided";
+			return $response;
+		}
+		try {
+			Files::deleteFile($_POST["name"]);
+		} catch (Exception $e) {
+			$response["err"] = "Unable to delete file";
 			return $response;
 		}
 	}
@@ -39,5 +53,5 @@ $method = $_SERVER["REQUEST_METHOD"];
 if ($method === "GET") {
 	echo json_encode(getFiles(), JSON_UNESCAPED_UNICODE);
 } else if ($method === "POST") {
-	echo json_encode(uploadFile(), JSON_UNESCAPED_UNICODE);
+	echo json_encode(modifyFiles(), JSON_UNESCAPED_UNICODE);
 }
