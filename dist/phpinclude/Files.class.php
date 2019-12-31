@@ -2,6 +2,8 @@
 
 require_once "Config.class.php";
 
+// TODO: implement filename sanitizer!!
+
 class Files {
 
 	public static function getFiles() {
@@ -36,4 +38,14 @@ class Files {
 		unlink(self::getUploadFilename($filename));
 	}
 
+	public static function renameFile($old, $new) {
+		$old = self::getUploadFilename($old);
+		$new = self::getUploadFilename($new);
+
+		if (file_exists($new)) {
+			throw new Exception("File already exists");
+		}
+
+		rename($old, $new);		
+	}
 }

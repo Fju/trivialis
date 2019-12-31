@@ -43,6 +43,18 @@ function modifyFiles() {
 			$response["err"] = "Unable to delete file";
 			return $response;
 		}
+	} else if ($_POST["method"] === "rename") {
+		if (!isset($_POST["name"]) || !isset($_POST["name_new"])) {
+			$response["err"] = "Not enough parameters provided";
+			return $response;
+		}
+
+		try {
+			Files::renameFile($_POST["name"], $_POST["name_new"]);
+		} catch (Exception $e) {
+			$response["err"] = "Unable to rename file";
+			return $response;
+		}
 	}
 
 

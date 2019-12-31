@@ -29,6 +29,20 @@ export function deleteFile(name, callback) {
 	});
 }
 
+export function renameFile(name, name_new, callback) {
+	request({
+		url: '/backend/assets.php',
+		method: 'POST',
+		data: {
+			method: 'rename',
+			name: name,
+			name_new: name_new
+		}
+	}, d => {
+		if (typeof callback === 'function') callback(d);
+	});
+}
+
 export function getFiles(callback) {
 	request({ url: '/backend/assets.php', method: 'GET' }, data => {
 		if (typeof callback === 'function') callback(data);

@@ -22,7 +22,10 @@
 			<tbody>
 				<tr v-for="file in files" :class="{ 'row-danger': file.state === 'error', 'row-pending': file.state === 'uploading' }">
 					<td>
-						{{ file.name }}
+						<span :class="{ hidden: file.state === 'rename' }">{{ file.name }}</span>
+						<div class="form-inline" :class="{ hidden: file.state !== 'rename' }">
+							<input class="form-control" type="text" id="file-rename" v-model="file.new_name" v-on:keypress.enter="onRenameSubmit(file)" />
+						</div>
 						<div v-if="file.state === 'error'" class="my-2">{{ file.err }}</div>
 					</td>
 					<td>{{ file.size }}</td>
@@ -60,7 +63,7 @@
 </template>
 <script>
 	import $ from 'jquery';
-	import { uploadFile, deleteFile, getFiles } from '../js/assets.js';
+	import { uploadFile, deleteFile, renameFile, getFiles } from '../js/assets.js';
 
 	const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
 
@@ -98,7 +101,7 @@
 						// convert filesize to human readable format
 						item.size = formatFilesize(item.size);
 						item.state = 'ok';
-						return item;	
+						return item;
 					});
 				}).bind(this));
 			},
@@ -109,12 +112,33 @@
 				this.deleteFilename = file.name;
 				$('#delete-assets-modal').modal('show');
 			},
+			onRenameClick (file) {
+				file.state = 'rename';
+				file.new_name = file.name;
+
+				var pos = file.new_name.lastIndexOf('.');
+				if (pos < 0) pos = file.new_name.length;
+
+				console.log($('#file-rename').focus());
+				//.setSelectionRange(0, pos);
+			},
 			onDeleteSubmit () {
 				$('#delete-assets-modal').modal('hide');	
 				deleteFile(this.deleteFilename, (function(data) {
 					if (data.err) console.log(data.err);
 					else this.update();
 				}).bind(this));
+			},
+			onRenameSubmit (file) {
+				if (file.new_name === file.name) {
+					file.state = 'ok';	
+				} else {
+					renameFile(file.name, file.new_name, (function(data) {
+						file.state = 'ok';
+						this.update();
+						
+					}).bind(this));	
+				}
 			}
 		},
 		mounted () {
