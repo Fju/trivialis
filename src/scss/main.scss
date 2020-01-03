@@ -78,7 +78,10 @@
 		width: 1px;
 	}
 }
-textarea {
-	font-family: monospace;
-}
+.form-group.form-group--inline {
 
+	.form-control {
+		display: inline-block;
+		width: 360px;
+	}
+}

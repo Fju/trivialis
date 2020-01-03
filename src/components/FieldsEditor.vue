@@ -2,13 +2,13 @@
 	<div class="page">
 		<h2>{{ pageTitle }}</h2>
 		<form id="field-form" class="row" v-on:submit="onSubmit">
-			<div class="col-12 form-group">
-				<label>Name:</label>
+			<div class="col-12 form-group form-group--inline">
+				<label class="mr-4">Name:</label>
 				<input type="text" class="form-control" v-model="fieldName" />
 			</div>
 			<div class="col-6">
 				<label>Content</label>
-				<textarea class="w-100" v-on:input="compile" v-model="fieldContent"></textarea>
+				<MonacoEditor height="500" :options="editorOptions" v-model="fieldContent" v-on:change="onSourceChange" language="markdown"></MonacoEditor>
 			</div>
 			<div class="col-6">
 				<label>Preview</label>
@@ -27,6 +27,9 @@
 	import { getJWT } from '../js/storage.js';
 	import { getField, modifyField, fetchFields } from '../js/fields.js';
 
+	import MonacoEditor from 'monaco-editor-vue';
+	import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution.js';
+
 	var compile_id;
 
 	export default {
@@ -36,15 +39,19 @@
 				fieldName: '',
 				fieldContent: '',
 				pageTitle: '',
-				input: ''
+				input: '',
+				editorOptions: {
+					minimap: { enabled: false },
+					automaticLayout: true
+				}
 			};
 		},
 		methods: {
-			compile () {
+			onSourceChange (value) {
 				if (compile_id) clearInterval(compile_id);
 				compile_id = setInterval((function() {
 					// update value to trigger re-computing `compiledMarkdown`
-					this.input = this.fieldContent;
+					this.input = value;
 				}).bind(this), 300);
 			},
 			onSubmit (e) {
@@ -79,8 +86,6 @@
 				} else {
 					this.fieldName = field.name;
 					this.fieldContent = field.content;
-					this.compile();
-
 					this.pageTitle = 'Edit Field "' + this.fieldName + '"';
 				}
 			},
@@ -89,6 +94,7 @@
 				this.$router.push('/fields');
 			},
 			handleUpdateResponse (data) {
+				this.$router.push('/fields');
 				console.log(data);
 			}
 		},
@@ -97,6 +103,7 @@
 				return marked(this.input); 
 			}
 		},
+		components: { MonacoEditor },
 		mounted () {
 			this.fieldId = this.$route.params.id;
 
