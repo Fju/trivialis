@@ -1,10 +1,13 @@
 <template>
-	<div class="page h-100">
+	<div class="page h-100" v-on:dragleave="onDragLeave" v-on:dragover="onDragOver" v-on:drop="onDrop">
+		<div class="drag-overlay":class="{ hidden: !dragOverlay }">
+			Drag and drop files here
+		</div>
 		<input type="file" multiple hidden id="file-input" />
 		<h1>Assets</h1>
-		<p>Upload files to the server</p>
 		<div class="row">
 			<div class="col">
+				<p>Upload files to the server</p>
 			</div>
 			<div class="col-auto">
 				<button class="btn btn-success" v-on:click="onUploadClick">Upload file(s)</button>
@@ -92,6 +95,7 @@
 		data () {
 			return {
 				deleteFilename: '',
+				dragOverlay: false,
 				files: []
 			}
 		},
@@ -137,21 +141,9 @@
 			},
 			onRenameCancel (file) {
 				file.state = 'ok';
-			}
-		},
-		mounted () {
-			this.update();
-
-			setInterval((function() {
-				// filter files array
-				this.files = this.files.filter(item => {
-					if (typeof item.until !== 'number') return true;
-					else return item.until > Date.now();
-				});
-			}).bind(this), 100);
-
-			$('#file-input').on('change', (function(e) {
-				[].forEach.call(e.target.files, (function(f) { 
+			},
+			uploadFiles (files) {
+				[].forEach.call(files, (function(f) { 
 					var file = {
 						name: f.name,
 						size: formatFilesize(f.size),
@@ -174,6 +166,33 @@
 						} else file.state = 'ok';
 					}).bind(this));
 				}).bind(this));
+			},
+			onDragLeave () {
+				this.dragOverlay = false;
+			},
+			onDragOver (e) {
+				e.preventDefault();
+				this.dragOverlay = true;
+			},
+			onDrop (e) {
+				e.preventDefault();
+				this.uploadFiles(e.dataTransfer.files);
+				this.dragOverlay = false;
+			}
+		},
+		mounted () {
+			this.update();
+
+			setInterval((function() {
+				// filter files array
+				this.files = this.files.filter(item => {
+					if (typeof item.until !== 'number') return true;
+					else return item.until > Date.now();
+				});
+			}).bind(this), 100);
+
+			$('#file-input').on('change', (function(e) {
+				this.uploadFiles(e.target.files);
 			}).bind(this));
 		}
 	}

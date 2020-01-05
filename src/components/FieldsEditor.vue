@@ -1,21 +1,22 @@
 <template>
 	<div class="page">
-		<h2>{{ pageTitle }}</h2>
+		<h1>{{ pageTitle }}</h1>
 		<form id="field-form" class="row" v-on:submit="onSubmit">
-			<div class="col-12 form-group form-group--inline">
+			<div class="col form-group form-group--inline">
 				<label class="mr-4">Name:</label>
 				<input type="text" class="form-control" v-model="fieldName" />
 			</div>
+			<div class="col-auto">
+				<button type="submit" class="btn btn-primary" v-on:click="onSubmit">Submit</button>
+			</div>
+			<div class="col-12"></div>
 			<div class="col-6">
-				<label>Content</label>
+				<label>Content:</label>
 				<MonacoEditor height="500" :options="editorOptions" v-model="fieldContent" v-on:change="onSourceChange" language="markdown"></MonacoEditor>
 			</div>
 			<div class="col-6">
-				<label>Preview</label>
+				<label>Preview:</label>
 				<div v-html="compiledMarkdown"></div>
-			</div>
-			<div class="col-12">
-				<button type="submit" class="btn btn-primary" v-on:click="onSubmit">Submit</button>
 			</div>
 		</form>
 	</div>

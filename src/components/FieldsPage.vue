@@ -21,7 +21,7 @@
 				<tr v-for="row in rows">
 					<td>{{ row.name }} ({{ row.id }})</td>
 					<td>
-						{{ row.content }}
+						{{ shorten(row.content) }}
 						<i class="text-muted" v-if="!row.content">no content</i>
 					</td>
 					<td class="small-col">
@@ -55,6 +55,8 @@
 	import { getJWT } from '../js/storage.js';
 	import { fetchFields, modifyField } from '../js/fields.js';
 
+	const MAX_CHARACTER_LENGTH = 45;
+
 	export default {
 		data () {
 			return {
@@ -64,6 +66,12 @@
 			};
 		},
 		methods: {
+			shorten (text) {
+				if (text.length > MAX_CHARACTER_LENGTH) {
+					return text.substr(0, MAX_CHARACTER_LENGH) + '...';
+				}
+				return text;
+			},
 			loadData () {
 				fetchFields((function(data) {
 					if (data.err) console.log(data.err);
