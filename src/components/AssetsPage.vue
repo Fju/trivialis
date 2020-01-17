@@ -11,9 +11,22 @@
 			</div>
 			<div class="col-auto">
 				<button class="btn btn-success" v-on:click="onUploadClick"><fa icon="upload"></fa> Upload file(s)</button>
-				<button class="btn btn-secondary" v-on:click="update">Update</button>
+				<button class="btn btn-secondary" v-on:click="update()"><fa icon="sync-alt"></fa> Update</button>
 			</div>
 		</div>
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item">
+					<a href="#" v-on:click.prevent="update()">
+						<fa icon="home"></fa>
+					</a>
+				</li>
+				<li v-for="dir in parentDirs" class="breadcrumb-item">
+					<a v-if="!dir.active" href="#" v-on:click.prevent="update(dir.to)">{{ dir.name }}</a>
+					<span v-else>{{ dir.name }}</span>
+				</li>
+			</ol>
+		</nav>
 		<table class="table table-striped">
 			<thead>
 				<tr>
@@ -25,15 +38,15 @@
 			</thead>
 			<tbody>
 				<tr v-if="cwd !== ''">
-					<td><a href="" v-on:click.prevent="update('..')">..</a></td>
+					<td><a href="" v-on:click.prevent="update(cwd + '/..')">..</a></td>
 				</tr>
 				<tr v-for="file in files" :class="{ 'row-danger': file.state === 'error', 'row-pending': file.state === 'uploading' }">
-					<td class="small-col">
+					<td class="small-col text-center">
 						<fa :icon="getFileIcon(file.type)" size="lg"></fa>
 					</td>
 					<td>
 						<span v-if="file.type === 'file'" :class="{ hidden: file.state === 'rename' }">{{ file.name }}</span>
-						<a href="" v-else :class="{ hidden: file.state === 'rename' }" v-on:click.prevent="update(file.name)">{{ file.name }}</a>
+						<a href="" v-else :class="{ hidden: file.state === 'rename' }" v-on:click.prevent="update(cwd + '/' + file.name)">{{ file.name }}</a>
 						<div class="form-inline" :class="{ hidden: file.state !== 'rename' }">
 							<input class="form-control" type="text" v-model="file.new_name" 
 								v-on:keydown.enter="onRenameSubmit(file)" v-on:keydown.esc="onRenameCancel(file)" />
@@ -108,10 +121,30 @@
 				cwd: ''
 			}
 		},
+		computed: {
+			parentDirs () {
+				// extract parent directory names and path from cwd string
+				// used to display breadcrumb navigation bar
+				var names = this.cwd.split('/');
+				var to = '';
+				var dirs = [];
+
+				for (var i = 0; i !== names.length; ++i) {
+					if (names[i] === '') continue;
+					to += names[i] + '/';
+					dirs.push({
+						name: names[i],
+						to: to,
+						active: i === names.length - 1
+					});
+				}
+				return dirs;
+			}
+		},
 		methods: {
 			update (dir) {
-				dir = dir || '';
-				getFiles(this.cwd + '/' + dir, (function(data) {
+				if (!dir) dir = '';
+				getFiles(dir, (function(data) {
 					while (this.files.length > 0) this.files.pop();
 					if (typeof data.cwd === 'string') this.cwd = data.cwd;
 					if (typeof data.contents === 'object') {

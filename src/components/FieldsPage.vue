@@ -5,8 +5,12 @@
 		<div class="row mb-4">
 			<div class="col">Fields are just pieces of texts that will be used to render a page.</div>
 			<div class="col-auto">
-				<router-link to="/fields/new" class="btn btn-success">Create new Field</router-link>
-				<button class="btn btn-secondary" v-on:click="loadData">Update</button>
+				<router-link to="/fields/new" class="btn btn-success">
+					<fa icon="plus"></fa> Create new Field
+				</router-link>
+				<button class="btn btn-secondary" v-on:click="loadData">
+					<fa icon="sync-alt"></fa> Update
+				</button>
 			</div>
 		</div>
 		<table class="table table-striped">
