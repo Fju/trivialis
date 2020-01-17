@@ -10,13 +10,14 @@
 				<p>Upload files to the server</p>
 			</div>
 			<div class="col-auto">
-				<button class="btn btn-success" v-on:click="onUploadClick">Upload file(s)</button>
+				<button class="btn btn-success" v-on:click="onUploadClick"><fa icon="upload"></fa> Upload file(s)</button>
 				<button class="btn btn-secondary" v-on:click="update">Update</button>
 			</div>
 		</div>
 		<table class="table table-striped">
 			<thead>
 				<tr>
+					<th></tg>
 					<th>Name</th>
 					<th>Size</th>
 					<th></th>
@@ -27,6 +28,9 @@
 					<td><a href="" v-on:click.prevent="update('..')">..</a></td>
 				</tr>
 				<tr v-for="file in files" :class="{ 'row-danger': file.state === 'error', 'row-pending': file.state === 'uploading' }">
+					<td class="small-col">
+						<fa :icon="getFileIcon(file.type)" size="lg"></fa>
+					</td>
 					<td>
 						<span v-if="file.type === 'file'" :class="{ hidden: file.state === 'rename' }">{{ file.name }}</span>
 						<a href="" v-else :class="{ hidden: file.state === 'rename' }" v-on:click.prevent="update(file.name)">{{ file.name }}</a>
@@ -44,8 +48,8 @@
 						<button type="button" class="close" v-if="file.state === 'error'" v-on:click="file.until = 0"><span>&times;</span></button>
 					</td>
 					<td class="small-col" v-else>
-						<button class="btn btn-primary btn-sm" v-on:click="onRenameClick(file)">Rename</button>
-						<button class="btn btn-danger btn-sm" v-on:click="openDeleteModal(file)">Delete</button>
+						<button class="btn btn-primary btn-sm" v-on:click="onRenameClick(file)"><fa icon="edit"></fa> Rename</button>
+						<button class="btn btn-danger btn-sm" v-on:click="openDeleteModal(file)"><fa icon="trash-alt"></fa> Delete</button>
 					</td>
 				</tr>
 			</tbody>
@@ -188,6 +192,10 @@
 				e.preventDefault();
 				this.uploadFiles(e.dataTransfer.files);
 				this.dragOverlay = false;
+			},
+			getFileIcon (type) {
+				if (type === 'dir') return 'folder';
+				else if (type === 'file') return 'file';
 			}
 		},
 		mounted () {

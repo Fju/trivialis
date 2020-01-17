@@ -10,6 +10,14 @@ Vue.use(VueRouter);
 import App from '../App.vue';
 import LoginModal from '../components/LoginModal.vue';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faFolder, faFile, faTrashAlt, faEdit, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+library.add(faFolder, faFile, faTrashAlt, faEdit, faUpload);
+
+Vue.component('fa', FontAwesomeIcon);
+
 
 var loginModal = new Vue(LoginModal);
 loginModal.$mount('#login-modal');
