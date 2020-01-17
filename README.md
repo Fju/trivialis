@@ -4,6 +4,16 @@ Super simple and lightweight Content Management System especially designed for s
 
 Trivialis features a modern and straight-forward frontend and a robust backend API, that can also be accessed programmatically.
 
+## Installation
+
+For installing PHP dependencies, it is recommended to use `composer` by running the following command in the `dist/` directory:
+
+``` sh
+composer install
+```
+
+Future versions will contain an autoinstall script that will install dependencies and initiate databases automatically.
+
 ## Development
 
 This repository provides a `docker-compose` configuration for running the required backend servers without installing them on your local machine. When running `docker-compose up`, three containers will be created. One container will provide an Apache 2 server that serves and executes the backend PHP scripts. The other two containers run a MySQL database server and phpMyAdmin for database management.

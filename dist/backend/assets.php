@@ -7,10 +7,7 @@ header("Content-Type: application/json; charset=utf-8");
 header("Access-Control-Allow-Methods: GET, POST");
 
 function getFiles() {
-	$response = array();
-
-	$response["files"] = Files::getFiles();
-
+	$response = Files::getContents($_GET["path"]);
 	return $response;
 }
 

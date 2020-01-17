@@ -2,31 +2,50 @@
 
 require_once "Config.class.php";
 
-// TODO: implement filename sanitizer!!
+
+class IllegalPathException extends Exception {}
 
 class Files {
 
-	public static function getFiles() {
-		$files = [];
+	public static function getContents($base_path) {
+		$data = [];
 
-		if ($dir = opendir(Config::getAssetsDir())) {
+		$asset_dir = Config::getAssetsDir();
+		$base_path = realpath($asset_dir . "/" . $base_path);
+
+		if (strpos($base_path, $asset_dir) === false) {
+			// directory is not inside the assets dir
+			throw new IllegalPathException();
+		}
+		
+		if (!is_dir($base_path)) return [];
+
+		$cwd = substr($base_path, strlen($asset_dir) + 1);
+		if ($cwd === false) $cwd = "";
+
+		if ($dir = opendir($base_path)) {
+			$data["cwd"] = $cwd;
+			$data["contents"] = [];
 			while (false !== ($entry = readdir($dir))) {
 				// skip `..` and `.`
-				if ($entry === ".." || $entry === ".") continue;
+				if ($entry === "." || $entry === "..") continue;
 
-				$path = self::getUploadFilename($entry);
-				
-				// skip directories, etc.
-				if (!is_file($path)) continue;
-					
-				$files[] = array(
-					"name" => $entry,
-					"size" => filesize($path)
-				);
+				$path = $base_path . "/" . $entry;				
+				if (is_file($path)) {
+					$data["contents"][] = array(
+						"name" => $entry,
+						"type" => "file"
+					);	
+				} else if (is_dir($path)) {
+					$data["contents"][] = array(
+						"name" => $entry,
+						"type" => "dir"
+					);
+				}
 			}
 			closedir($dir);
 		}
-		return $files;
+		return $data;
 	}
 
 	public static function getUploadFilename($filename) {
@@ -38,7 +57,7 @@ class Files {
 		// santize filename, illegal characters will be removed
 		// allowed: A-Z, a-z, 0-9 and special characters like -._~,;[]()
 		// multiple occurences of dots (.) will be replaced with a single dot
-		$filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", "", $filename);
+		$filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\)\/])", "", $filename);
 		$filename = mb_ereg_replace("([\.]{2,})", ".", $filename);
 
 		return $filename;

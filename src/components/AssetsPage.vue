@@ -23,9 +23,13 @@
 				</tr>
 			</thead>
 			<tbody>
+				<tr v-if="cwd !== ''">
+					<td><a href="" v-on:click.prevent="update('..')">..</a></td>
+				</tr>
 				<tr v-for="file in files" :class="{ 'row-danger': file.state === 'error', 'row-pending': file.state === 'uploading' }">
 					<td>
-						<span :class="{ hidden: file.state === 'rename' }">{{ file.name }}</span>
+						<span v-if="file.type === 'file'" :class="{ hidden: file.state === 'rename' }">{{ file.name }}</span>
+						<a href="" v-else :class="{ hidden: file.state === 'rename' }" v-on:click.prevent="update(file.name)">{{ file.name }}</a>
 						<div class="form-inline" :class="{ hidden: file.state !== 'rename' }">
 							<input class="form-control" type="text" v-model="file.new_name" 
 								v-on:keydown.enter="onRenameSubmit(file)" v-on:keydown.esc="onRenameCancel(file)" />
@@ -96,19 +100,25 @@
 			return {
 				deleteFilename: '',
 				dragOverlay: false,
-				files: []
+				files: [],
+				cwd: ''
 			}
 		},
 		methods: {
-			update () {
-				getFiles((function(data) {
-					console.log(data);
-					if (typeof data.files === 'object') this.files = data.files.map(item => {
-						// convert filesize to human readable format
-						item.size = formatFilesize(item.size);
-						item.state = 'ok';
-						return item;
-					});
+			update (dir) {
+				dir = dir || '';
+				getFiles(this.cwd + '/' + dir, (function(data) {
+					while (this.files.length > 0) this.files.pop();
+					if (typeof data.cwd === 'string') this.cwd = data.cwd;
+					if (typeof data.contents === 'object') {
+						for (var i = 0; i < data.contents.length; ++i) {
+							this.files.push({
+								name: data.contents[i].name,
+								type: data.contents[i].type,
+								state: 'ok'
+							});
+						}
+					}
 				}).bind(this));
 			},
 			onUploadClick () {

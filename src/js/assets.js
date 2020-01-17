@@ -43,8 +43,9 @@ export function renameFile(name, name_new, callback) {
 	});
 }
 
-export function getFiles(callback) {
-	request({ url: '/backend/assets.php', method: 'GET' }, data => {
+export function getFiles(path, callback) {
+	console.log('get files', path);
+	request({ url: '/backend/assets.php', method: 'GET', data: { path: path } }, data => {
 		if (typeof callback === 'function') callback(data);
 	});
 }
