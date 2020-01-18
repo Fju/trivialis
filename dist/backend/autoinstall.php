@@ -6,6 +6,9 @@ require_once "Config.class.php";
 
 // TODO: generate default config
 // TODO: create random key for signing web tokens!
+// TODO: accept GET parameters
+// TODO: error handling / retries
+// TODO: progress outputs
 
 function createUsers() {
 	// drop user table (for development only)
@@ -47,6 +50,22 @@ function createFields() {
 }
 
 
-createUsers();
-createFields();
+function createPages() {
+	// drop pages table (for development only)
+	DB::exec("DROP TABLE IF EXISTS pages");
+
+	DB::exec("CREATE TABLE pages (
+		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		name VARCHAR(50) NOT NULL UNIQUE,
+		route VARCHAR(50) NOT NULL,
+		layout INT NULL,
+		content TEXT,
+		FOREIGN KEY (layout) REFERENCES pages(id)
+	)");
+}
+
+
+//createUsers();
+//createFields();
+createPages();
 

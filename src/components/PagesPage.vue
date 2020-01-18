@@ -1,11 +1,11 @@
 <template>
 	<div class="page">
-		<h1>Fields</h1>
+		<h1>Pages</h1>
 		<div class="row mb-4">
 			<div class="col">Fields are just pieces of texts that will be used to render a page.</div>
 			<div class="col-auto">
 				<router-link to="/fields/new" class="btn btn-success">
-					<fa icon="plus"></fa> Create new Field
+					<fa icon="plus"></fa> Create new Page
 				</router-link>
 				<button class="btn btn-secondary" v-on:click="loadData">
 					<fa icon="sync-alt"></fa> Update
@@ -16,36 +16,33 @@
 			<thead>
 				<tr>
 					<th>Name</th>
-					<th>Content</th>
+					<th>Route</th>
+					<th>Layout</th>
 					<th></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr v-for="row in rows">
 					<td>{{ row.name }} ({{ row.id }})</td>
-					<td>
-						{{ shorten(row.content) }}
-						<i class="text-muted" v-if="!row.content">no content</i>
-					</td>
+					<td>{{ row.route }}</td>
+					<td>{{ row.layout }}</td>
 					<td class="small-col">
-						<router-link :to="row.to" class="btn btn-primary btn-sm"><fa icon="edit"></fa> Edit</router-link>
-						<button class="btn btn-danger btn-sm" v-on:click="onDeleteClick(row.id, row.name)">
-							<fa icon="trash-alt"></fa> Delete
-						</button>
+						<router-link :to="row.to" class="btn btn-primary btn-sm">Edit</router-link>
+						<button class="btn btn-danger btn-sm" v-on:click="onDeleteClick(row.id, row.name)">Delete</button>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<div class="modal fade" id="delete-field-modal" tabindex="-1" role="dialog" aria-labelledby="delete-field-modal-label" aria-hidden="true">
+		<div class="modal fade" id="delete-page-modal" tabindex="-1" role="dialog" aria-labelledby="delete-page-modal-label" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="delete-field-modal-label">Are you sure?</h5>
+						<h5 class="modal-title" id="delete-page-modal-label">Are you sure?</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
-					<div class="modal-body">Do you really want to delete field "{{ deleteFieldName }}"</div>
+					<div class="modal-body">Do you really want to delete the page "{{ deletePageName }}"</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 						<button type="button" class="btn btn-danger" v-on:click="onDeleteSubmit">Delete</button>
@@ -57,32 +54,26 @@
 </template>
 <script>
 	import $ from 'jquery';
+	import { fetchPages } from '../js/pages.js';
 	import { getJWT } from '../js/storage.js';
-	import { fetchFields, modifyField } from '../js/fields.js';
-
-	const MAX_CHARACTER_LENGTH = 45;
 
 	export default {
 		data () {
 			return {
-				deleteFieldName: '',
-				deleteFieldId: '',
+				deletePageName: '',
 				rows: []
 			};
 		},
 		methods: {
-			shorten (text) {
-				if (text.length > MAX_CHARACTER_LENGTH) {
-					return text.substr(0, MAX_CHARACTER_LENGH) + '...';
-				}
-				return text;
-			},
 			loadData () {
-				fetchFields((function(data) {
+				fetchPages((function(data) {
 					if (data.err) console.log(data.err);
-					if (data.fields) this.rows = data.fields.map(field => {
-						field.to = { name: 'Fields/Edit', params: { id: field.id } };
-						return field;
+					if (data.pages) this.rows = data.pages.map(page => {
+						page.to = { name: 'Pages/Edit', params: { id: page.id } };
+						if (!page.layout_id) page.layout = '-';
+						else page.layout = page.layout_name + ' (' + page.layout_id + ')';
+
+						return page;
 					});		
 				}).bind(this));
 			},
