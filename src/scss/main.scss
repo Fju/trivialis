@@ -19,16 +19,26 @@
 	flex-grow: 1;	
 	padding: 1em;
 	position: relative;
+	
+	max-width: 1000px;
 
 	.drag-overlay {
-		background: rgba(0, 0, 0, 0.2);
+		background: rgba(0, 0, 0, 0.75);
 		position: absolute;
+		z-index: 5;
 		top: 0;
 		left: 0;
 		right: 0;
 		bottom: 0;
 
 		color: white;
+		font-size: 1.5rem;
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+
 	}
 }
 
@@ -77,9 +87,6 @@
 	}
 }
 
-.table {
-	max-width: 1000px;
-}
 .table tbody {
 	tr.row-danger {
 		background-color: rgba($red, .15);

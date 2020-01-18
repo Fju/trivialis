@@ -1,7 +1,8 @@
 <template>
 	<div class="page h-100" v-on:dragleave="onDragLeave" v-on:dragover="onDragOver" v-on:drop="onDrop">
-		<div class="drag-overlay":class="{ hidden: !dragOverlay }">
-			Drag and drop files here
+		<div class="drag-overlay" :class="{ hidden: !dragOverlay }">
+			<fa icon="upload" size="3x" class="mb-3"></fa>
+			Drop file(s) to upload
 		</div>
 		<input type="file" multiple hidden id="file-input" />
 		<h1>Assets</h1>
@@ -10,8 +11,9 @@
 				<p>Upload files to the server</p>
 			</div>
 			<div class="col-auto">
+				<button class="btn btn-success" v-on:click="onCreateClick"><fa icon="plus"></fa> Create directory</button>
 				<button class="btn btn-success" v-on:click="onUploadClick"><fa icon="upload"></fa> Upload file(s)</button>
-				<button class="btn btn-secondary" v-on:click="update()"><fa icon="sync-alt"></fa> Update</button>
+				<button class="btn btn-secondary" v-on:click="update(cwd)"><fa icon="sync-alt"></fa> Update</button>
 			</div>
 		</div>
 		<nav aria-label="breadcrumb">
@@ -38,13 +40,17 @@
 			</thead>
 			<tbody>
 				<tr v-if="cwd !== ''">
+					<td><fa icon="undo-alt"></fa></td>
 					<td><a href="" v-on:click.prevent="update(cwd + '/..')">..</a></td>
+					<td></td>
+					<td></td>
 				</tr>
 				<tr v-for="file in files" :class="{ 'row-danger': file.state === 'error', 'row-pending': file.state === 'uploading' }">
 					<td class="small-col text-center">
 						<fa :icon="getFileIcon(file.type)" size="lg"></fa>
 					</td>
 					<td>
+						<!-- TODO: make this less complicated -->
 						<span v-if="file.type === 'file'" :class="{ hidden: file.state === 'rename' }">{{ file.name }}</span>
 						<a href="" v-else :class="{ hidden: file.state === 'rename' }" v-on:click.prevent="update(cwd + '/' + file.name)">{{ file.name }}</a>
 						<div class="form-inline" :class="{ hidden: file.state !== 'rename' }">
@@ -94,6 +100,8 @@
 	const ERROR_LIFESPAN = 7 * 1000; // 7 seconds
 
 	function formatFilesize(size) {
+		if (size === undefined) return '-';
+
 		var i = 0;
 		while (size > 1000) {
 			size /= 1024;
@@ -152,6 +160,7 @@
 							this.files.push({
 								name: data.contents[i].name,
 								type: data.contents[i].type,
+								size: formatFilesize(data.contents[i].size),
 								state: 'ok'
 							});
 						}
@@ -173,27 +182,31 @@
 				$('#delete-assets-modal').modal('hide');	
 				deleteFile(this.deleteFilename, (function(data) {
 					if (data.err) console.log(data.err);
-					else this.update();
+					else this.update(this.cwd);
 				}).bind(this));
 			},
 			onRenameSubmit (file) {
 				if (file.new_name === file.name) {
 					file.state = 'ok';	
 				} else {
-					renameFile(file.name, file.new_name, (function(data) {
+					renameFile(this.cwd + '/' + file.name, this.cwd + '/' + file.new_name, (function(data) {
 						file.state = 'ok';
-						this.update();
+						this.update(this.cwd);
 					}).bind(this));	
 				}
 			},
 			onRenameCancel (file) {
 				file.state = 'ok';
 			},
+			onCreateClick () {
+					
+			},
 			uploadFiles (files) {
 				[].forEach.call(files, (function(f) { 
 					var file = {
 						name: f.name,
 						size: formatFilesize(f.size),
+						type: 'file',
 						state: 'uploading'
 					};
 

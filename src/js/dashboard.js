@@ -11,10 +11,10 @@ import App from '../App.vue';
 import LoginModal from '../components/LoginModal.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faFolder, faFile, faTrashAlt, faEdit, faUpload, faPlus, faSyncAlt, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faFolder, faFile, faTrashAlt, faEdit, faUpload, faPlus, faSyncAlt, faHome, faUndoAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-library.add(faFolder, faFile, faTrashAlt, faEdit, faUpload, faPlus, faSyncAlt, faHome);
+library.add(faFolder, faFile, faTrashAlt, faEdit, faUpload, faPlus, faSyncAlt, faHome, faUndoAlt);
 
 Vue.component('fa', FontAwesomeIcon);
 

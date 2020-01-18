@@ -16,12 +16,7 @@ function modifyFiles() {
 
 	if ($_POST["method"] === "upload") {
 		try {
-			$filename = Files::getUploadFilename($_FILES["file"]["name"]);
-			if (file_exists($filename)) {
-				$response["err"] = "Filename already exists";
-				return $response;
-			}
-			move_uploaded_file($_FILES["file"]["tmp_name"], $filename);
+			Files::uploadFile();
 		} catch (InvalidConfigurationException $e) {
 			$response["err"] = "Trivialis is configured improperly";
 			return $response;
@@ -50,6 +45,18 @@ function modifyFiles() {
 			Files::renameFile($_POST["name"], $_POST["name_new"]);
 		} catch (Exception $e) {
 			$response["err"] = "Unable to rename file";
+			return $response;
+		}
+	} else if ($_POST["method"] === "mkdir") {
+		if (!isset($_POST["name"])) {
+			$response["err"] = "No directory name provided";
+			return $response;
+		}
+
+		try {
+			Files::createDir($_POST["name"]);
+		} catch (Exception $e) {
+			$response["err"] = "Unable to create new directory";
 			return $response;
 		}
 	}
