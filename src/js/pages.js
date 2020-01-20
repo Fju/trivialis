@@ -9,9 +9,19 @@ export function getPage(id) {
 	});
 }
 
+export function getPages() {
+	return pages;
+}
+
 export function fetchPages(callback) {
 	request({ url: '/backend/pages.php', method: 'GET' }, data => {
 		if (data.pages) pages = data.pages;
 		if (typeof callback === 'function') callback(data);	
+	});
+}
+
+export function modifyPage(parameters, callback) {
+	request({ url: '/backend/pages.php', method: 'POST', data: parameters }, data => {
+		if (typeof callback === 'function') callback(data);
 	});
 }
