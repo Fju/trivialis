@@ -12,6 +12,8 @@ export const routes = [
 	{ path: '/fields/new', name: 'Fields/New', component: FieldsEditor },
 	{ path: '/fields/edit/:id', name: 'Fields/Edit', component: FieldsEditor },
 	{ path: '/pages', name: 'Pages', component: PagesPage },
+	/*{ page: '/pages/new', name: 'Pages/New', component: PagesEditor },
+	{ page: '/pages/edit/:id', name: 'Pages/Edit', component: PagesEditor },*/
 	{ path: '/assets', name: 'Assets', component: AssetsPage },
 	{ path: '/statistics', name: 'Statistics', component: BlankPage }
 ];

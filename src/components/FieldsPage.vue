@@ -57,7 +57,6 @@
 </template>
 <script>
 	import $ from 'jquery';
-	import { getJWT } from '../js/storage.js';
 	import { fetchFields, modifyField } from '../js/fields.js';
 
 	const MAX_CHARACTER_LENGTH = 45;

@@ -12,17 +12,13 @@ function getPages() {
 	$response = array();
 	
 	$authorized = Authorizer::authorize();
-	// TODO: return error code (e. g. empty token, malformed token, expired token, etc.)
 	if ($authorized !== Authorizer::JWT_VALID) {
 		$response["unauth"] = $authorized;
 		return $response;
 	}
 
-	$sql = "SELECT p1.id, p1.name, p1.route, p1.content, p1.layout AS layout_id, p2.name AS layout_name
-	   FROM pages p1 LEFT JOIN pages p2 ON p1.layout = p2.id";
 	try {
-		// select all pages and resolve the layout reference
-		$response["pages"] = DB::query($sql);
+		$response["pages"] = DB::query("SELECT * FROM pages");
 	} catch (DBException $e) {
 		$err_code = $e->getErrorCode();
 		$err_msg = $e->getError();
@@ -32,9 +28,21 @@ function getPages() {
 	return $response;
 }
 
+function setPages() {
+	$response = array();
+	
+	$authorized = Authorizer::authorize();
+	if ($authorized !== Authorizer::JWT_VALID) {
+		$response["unauth"] = $authorized;
+		return $response;
+	}
+
+	return $response;
+} 
+
 $method = $_SERVER["REQUEST_METHOD"];
 if ($method === "GET") {
 	echo json_encode(getPages(), JSON_UNESCAPED_UNICODE);
 } else if ($method === "POST") {
-	//echo json_encode(setFields(), JSON_UNESCAPED_UNICODE);
+	echo json_encode(setFields(), JSON_UNESCAPED_UNICODE);
 }
