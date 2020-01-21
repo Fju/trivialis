@@ -63,6 +63,7 @@
 	export default {
 		data () {
 			return {
+				deletePageId: 0,
 				deletePageName: '',
 				rows: []
 			};
@@ -80,18 +81,20 @@
 						if (layout) page.layout = layout.name;
 						else page.layout = '-';
 
+						if (!page.route) page.route = '-';
+
 						return page;
 					});		
 				}).bind(this));
 			},
 			onDeleteClick (id, name) {
-				this.deleteFieldId = id;
-				this.deleteFieldName = name;
+				this.deletePageId = id;
+				this.deletePageName = name;
 				$('#delete-page-modal').modal('show');
 			},
 			onDeleteSubmit () {
 				$('#delete-page-modal').modal('hide');
-				modifyPage({ id: this.deleteFieldId, method: 'delete' }, (function(data) {
+				modifyPage({ id: this.deletePageId, method: 'delete' }, (function(data) {
 					if (data.err) console.log('Error when deleting: ' + data.err);
 					else this.update();
 				}).bind(this));

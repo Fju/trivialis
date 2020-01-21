@@ -57,7 +57,7 @@ function createPages() {
 	DB::exec("CREATE TABLE pages (
 		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		name VARCHAR(50) NOT NULL UNIQUE,
-		route VARCHAR(50) NOT NULL,
+		route VARCHAR(50) NULL,
 		layout INT NULL,
 		content TEXT,
 		FOREIGN KEY (layout) REFERENCES pages(id)

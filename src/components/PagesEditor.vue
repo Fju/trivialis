@@ -10,6 +10,12 @@
 				<label class="mr-4">Route:</label>
 				<input type="text" class="form-control" v-model="pageRoute" />
 			</div>
+			<div class="col form-group form-group--inline">
+				<label class="mr-4">Layout:</label>
+				<select class="form-control" v-model="pageLayout">
+					<option v-for="layout in layouts">{{ layout.name }}</option>
+				</select>
+			</div>
 			<div class="col-auto">
 				<button type="submit" class="btn btn-primary" v-on:click="onSubmit">Submit</button>
 			</div>
@@ -22,7 +28,7 @@
 </template>
 <script>
 	import $ from 'jquery';
-	import { fetchPages, getPage } from '../js/pages.js';
+	import { fetchPages, getPage, getPages } from '../js/pages.js';
 
 	import MonacoEditor from 'monaco-editor-vue';
 	import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution.js';
@@ -42,6 +48,11 @@
 				}
 			};
 		},
+		computed: {
+			layouts () {
+				return getPages();
+			}
+		},
 		methods: {
 			onSubmit (e) {
 				// prevent default behaviour of submitting forms
@@ -50,6 +61,8 @@
 				var parameters = {
 					id: this.fieldId,
 					name: this.fieldName,
+					route: this.fieldRoute,
+					layout: this.fieldLayout,
 					content: this.fieldContent
 				};
 
@@ -77,16 +90,14 @@
 					this.pageRoute = page.route;
 					this.pageLayout = page.layout;
 					this.pageContent = page.content;
-					this.title = 'Edit Field "' + this.pageName + '"';
+					this.title = 'Edit Page "' + this.pageName + '"';
 				}
 			},
 			handleCreateResponse (data) {
-				console.log(data);
-				this.$router.push('/fields');
+				this.$router.push('/pages');
 			},
 			handleUpdateResponse (data) {
-				this.$router.push('/fields');
-				console.log(data);
+				this.$router.push('/pages');
 			}
 		},
 		components: { MonacoEditor },
@@ -94,7 +105,7 @@
 			this.pageId = this.$route.params.id;
 
 			if (!this.pageId) {
-				this.title = 'Create new Field';
+				this.title = 'Create new Page';
 			} else {
 				this.tryLoad(0);
 			}
