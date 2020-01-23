@@ -13,7 +13,7 @@
 			<div class="col form-group form-group--inline">
 				<label class="mr-4">Layout:</label>
 				<select class="form-control" v-model="pageLayout">
-					<option v-for="layout in layouts">{{ layout.name }}</option>
+					<option v-for="layout in layouts" :value="layout.id">{{ layout.name }}</option>
 				</select>
 			</div>
 			<div class="col-auto">
@@ -21,17 +21,17 @@
 			</div>
 			<div class="col-12">
 				<label>Content:</label>
-				<MonacoEditor height="500" :options="editorOptions" v-model="pageContent" language="markdown"></MonacoEditor>
+				<MonacoEditor height="500" :options="editorOptions" v-model="pageContent" language="html"></MonacoEditor>
 			</div>
 		</form>
 	</div>
 </template>
 <script>
 	import $ from 'jquery';
-	import { fetchPages, getPage, getPages } from '../js/pages.js';
+	import { fetchPages, getPage, getPages, modifyPage } from '../js/pages.js';
 
 	import MonacoEditor from 'monaco-editor-vue';
-	import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution.js';
+	import 'monaco-editor/esm/vs/basic-languages/html/html.contribution.js';
 
 	export default {
 		data () {
@@ -59,19 +59,19 @@
 				e.preventDefault();
 
 				var parameters = {
-					id: this.fieldId,
-					name: this.fieldName,
-					route: this.fieldRoute,
-					layout: this.fieldLayout,
-					content: this.fieldContent
+					id: this.pageId,
+					name: this.pageName,
+					route: this.pageRoute,
+					layout: this.pageLayout,
+					content: this.pageContent
 				};
 
-				if (this.$route.name === 'Fields/New') {
+				if (this.$route.name === 'Pages/New') {
 					parameters.method = 'create';
-					modifyField(parameters, this.handleCreateResponse);
+					modifyPage(parameters, this.handleCreateResponse);
 				} else {
 					parameters.method = 'update';
-					modifyField(parameters, this.handleUpdateResponse);
+					modifyPage(parameters, this.handleUpdateResponse);
 				}
 			},
 			tryLoad (attempt) {

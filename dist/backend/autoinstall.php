@@ -59,9 +59,11 @@ function createPages() {
 		name VARCHAR(50) NOT NULL UNIQUE,
 		route VARCHAR(50) NULL,
 		layout INT NULL,
-		content TEXT,
-		FOREIGN KEY (layout) REFERENCES pages(id)
+		content TEXT NULL,
+		FOREIGN KEY (layout) REFERENCES pages(id) ON DELETE SET NULL,
+		CHECK(layout <> id)
 	)");
+	//FIXME: why is the check constraint ignored
 }
 
 

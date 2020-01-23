@@ -73,7 +73,7 @@
 					modifyField(parameters, this.handleUpdateResponse);
 				}
 			},
-			loadField (attempt) {
+			tryLoad (attempt) {
 				var field = getField(this.fieldId);
 
 				if (!field) {
@@ -82,7 +82,7 @@
 						this.$router.push('/fields');
 					}
 					fetchFields((function() {
-						this.loadField(attempt + 1);
+						this.tryLoad(attempt + 1);
 					}).bind(this));
 				} else {
 					this.fieldName = field.name;
@@ -111,7 +111,7 @@
 			if (!this.fieldId) {
 				this.pageTitle = 'Create new Field';
 			} else {
-				this.loadField(0);
+				this.tryLoad(0);
 			}
 		}
 		//components: { Multipane, MultipaneResizer }
