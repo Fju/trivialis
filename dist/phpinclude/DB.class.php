@@ -48,6 +48,10 @@ class DB {
 	public static function close() {
 		if (self::$conn) self::$conn->close();
 	}
+
+	public static function get_conn() {
+		return self::$conn;
+	}
 	
 	public static function query_json($sql) {
 		return json_encode(self::query($sql), JSON_UNESCAPED_UNICODE);
@@ -68,11 +72,21 @@ class DB {
 		return $data;
 	}
 
+	public static function prepare($sql) {
+		return self::$conn->prepare($sql);
+	}
+
 	public static function exec($sql) {
 		if ($result = self::$conn->query($sql)) {
 			return $result;
 		} else {
 			throw new DBException(self::$conn->error, self::$conn->errno);
+		}
+	}
+
+	public static function exec_statement($stmt) {
+		if ($stmt->execute() === false) {
+			throw new DBException($stmt->error, $stmt->errno);
 		}
 	}
 

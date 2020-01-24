@@ -2,12 +2,11 @@
 
 require_once "DB.class.php";
 require_once "Authorizer.class.php";
-require_once "Parameters.php";
+require_once "Utils.php";
 
 // header information
 header("Content-Type: application/json; charset=utf-8");
 header("Access-Control-Allow-Methods: GET, POST");
-
 
 function getPages() {
 	$response = array();
@@ -39,6 +38,7 @@ function setPages() {
 	}
 
 	try { 
+		// `get_post_param` escapes parameter by default
 		$id = get_post_param("id");
 		$name = get_post_param("name");
 		$content = get_post_param("content");
@@ -46,35 +46,51 @@ function setPages() {
 		$layout = get_post_param("layout");
 
 		if ($_POST["method"] === "update") {
-			// check parameters
-			if ($id === false) {
+			// check obligatory parameters
+			if ($id === null) {
 				$response["err"] = "An ID has to be specified when updating a page.";
 				return $response;
 			}
-			
-			// escape parameters to prevent SQL injections
-			$name = DB::escape($name);
-			$content = DB::escape($content);
-			$id = DB::escape($id);
-			$route = DB::escape($route);
-			$layout = DB::escape($layout);
 
-			DB::exec("UPDATE pages SET name='$name', content='$content', route='$route', layout='$layout' WHERE id = $id");
+			$statement = DB::prepare("UPDATE pages SET name=?, content=?, route=?, layout=? WHERE id = ?");
+			$statement->bind_param("sssdd", $name, $content, $route, $layout, $id);
+
+			DB::exec_statement($statement);
 		} else if ($_POST["method"] === "create") {
 			// check parameters
-			if (!isset($_POST["name"]) || !isset($_POST["content"]) || !isset($_POST["route"])) {
+			if ($name === null) {
 				$response["err"] = "Not enough parameters specified for creating a new page";
 				return $response;
 			}
 
-			$name = DB::escape($_POST["name"]);
-			$content = DB::escape($_POST["content"]);
-			$route = DB::escape($_POST["route"]);
+			$statement = DB::prepare("INSERT INTO pages (name, content, route, layout) VALUES (?, ?, ?, ?)");
+			$statement->bind_param("sssd", $name, $content, $route, $layout);
 
-			DB::exec("INSERT INTO pages (name, content, route) VALUES ('$name', '$content', '$route')");
+			DB::exec_statement($statement);
+		} else if ($_POST["method"] === "delete") {
+			if ($id === null) {
+				$response["err"] = "An ID has to be specified when deleting a page.";
+				return $response;
+			}
+
+			$statement = DB::prepare("DELETE FROM pages WHERE id = ?");
+			$statement->bind_param("d", $id);
+
+			DB::exec_statement($statement);
 		}
-	} catch (Exception $e) {
-		var_dump($e);
+	} catch (DBException $e) {
+		$err_code = $e->getErrorCode();
+		$err_msg = $e->getError();
+
+		if ($err_code === 1062) {
+			// duplicate entry
+			$response["err"] = "name parameter must be unique";
+		} else if ($err_code === 1452) {
+			// foreign key constraint violated
+			$response["err"] = "Specified layout parameter is invalid";
+		} else var_dump($e);
+	} finally {
+		if ($statement) $statement->close();
 	}
 
 	return $response;
