@@ -54,6 +54,10 @@ function createPages() {
 	// drop pages table (for development only)
 	DB::exec("DROP TABLE IF EXISTS pages");
 
+	// `name` should be unique and cannot be null
+	// `route` must be unique but can be null (e. g. when a page or layout shouldn't be accessible via an URL)
+	// `layout` is a foreign key that references ANOTHER row in the pages table,
+	//  	if the referenced row is deleted the value will be set to NULL
 	DB::exec("CREATE TABLE pages (
 		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		name VARCHAR(50) NOT NULL UNIQUE,
@@ -63,7 +67,7 @@ function createPages() {
 		FOREIGN KEY (layout) REFERENCES pages(id) ON DELETE SET NULL,
 		CHECK(layout <> id)
 	)");
-	//FIXME: why is the check constraint ignored
+	//FIXME: why is the check constraint ignored?
 }
 
 

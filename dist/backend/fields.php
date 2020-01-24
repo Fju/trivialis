@@ -2,6 +2,7 @@
 
 require_once "DB.class.php";
 require_once "Authorizer.class.php";
+require_once "Utils.php";
 
 // header information
 header("Content-Type: application/json; charset=utf-8");
@@ -40,40 +41,46 @@ function setFields() {
 	}
 
 	try {
+		$id = get_post_param("id");
+		$name = get_post_param("name");
+		$content = get_post_param("content");
+
 		if ($_POST["method"] === "update") {
-			// check parameters
-			if (!isset($_POST["name"]) || !isset($_POST["content"]) || !isset($_POST["id"])) {
-				$response["err"] = "Not enough parameters specified for updating data";
+			// check obligatory parameters
+			if ($id === false) {
+				$response["err"] = "An ID must be provided when updating a field";
 				return $response;
 			}
 
-			// escape parameters to prevent SQL injections
-			$name = DB::escape($_POST["name"]);
-			$content = DB::escape($_POST["content"]);
-			$id = DB::escape($_POST["id"]);
+			$statement = DB::prepare("UPDATE fields SET name=?, content=? WHERE id=?");
+			$statement->bind_param("ssd", $name, $content, $id);
 
-			DB::exec("UPDATE fields SET name='$name', content='$content' WHERE id = $id");
+			DB::exec_statement($statement);
 		} else if ($_POST["method"] === "create") {
 			// check parameters
-			if (!isset($_POST["name"]) || !isset($_POST["content"])) {
-				$response["err"] = "Not enough parameters specified for creating new data";
+			if ($name === false) {
+				$response["err"] = "A name must be provided when creating a new field";
 				return $response;
 			}
 
-			$name = DB::escape($_POST["name"]);
-			$content = DB::escape($_POST["content"]);
+			$statement = DB::prepare("INSERT INTO fields (name, content) VALUES (?, ?)");
+			$statement->bind_param("ss", $name, $content);
 
-			DB::exec("INSERT INTO fields (name, content) VALUES ('$name', '$content')");	
+			DB::exec_statement($statement);
+
+			//DB::exec("INSERT INTO fields (name, content) VALUES ('$name', '$content')");	
 		} else if ($_POST["method"] === "delete") {
 			// check parameters
-			if (!isset($_POST["id"])) {
-				$response["err"] = "Not enough parameters specified for deleting data";
+			if ($id === false) {
+				$response["err"] = "An ID must be provided when deleting a field";
 				return $response;
 			}
 
-			$id = DB::escape($_POST["id"]);
-		
-			DB::exec("DELETE FROM fields WHERE id = $id");
+			$statement = DB::prepare("DELETE FROM fields WHERE id=?");
+			$statement->bind_param("d", $id);
+
+			DB::exec_statement($statement);
+			//DB::exec("DELETE FROM fields WHERE id = $id");
 		} else {
 			// invalid method parameter provided
 			$response["err"] = "Invalid value for method parameter";
@@ -85,10 +92,11 @@ function setFields() {
 		if ($err_code === 1062) {
 			// duplicate entry
 			$response["err"] = "Field names must be unique";
-			return $response;
 		}
 		// other error 
 		$response["err"] = "Database error (#$err_code)\n$err_msg";
+	} finally {
+		if ($statement) $statement->close();
 	}
 
 	return $response;
