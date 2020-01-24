@@ -2,6 +2,7 @@
 
 require_once "DB.class.php";
 require_once "Authorizer.class.php";
+require_once "Parameters.php";
 
 // header information
 header("Content-Type: application/json; charset=utf-8");
@@ -37,23 +38,26 @@ function setPages() {
 		return $response;
 	}
 
-	try {
-		// TODO: escape parameters outside the if statement
-		// TODO: only ID is
+	try { 
+		$id = get_post_param("id");
+		$name = get_post_param("name");
+		$content = get_post_param("content");
+		$route = get_post_param("route");
+		$layout = get_post_param("layout");
+
 		if ($_POST["method"] === "update") {
 			// check parameters
-			if (!isset($_POST["name"]) || !isset($_POST["content"]) || !isset($_POST["id"]) ||
-				!isset($_POST["route"]) || !isset($_POST["layout"])) {
-				$response["err"] = "Not enough parameters specified for updating data";
+			if ($id === false) {
+				$response["err"] = "An ID has to be specified when updating a page.";
 				return $response;
 			}
 			
 			// escape parameters to prevent SQL injections
-			$name = DB::escape($_POST["name"]);
-			$content = DB::escape($_POST["content"]);
-			$id = DB::escape($_POST["id"]);
-			$route = DB::escape($_POST["route"]);
-			$layout = DB::escape($_POST["layout"]);
+			$name = DB::escape($name);
+			$content = DB::escape($content);
+			$id = DB::escape($id);
+			$route = DB::escape($route);
+			$layout = DB::escape($layout);
 
 			DB::exec("UPDATE pages SET name='$name', content='$content', route='$route', layout='$layout' WHERE id = $id");
 		} else if ($_POST["method"] === "create") {
