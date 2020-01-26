@@ -14,7 +14,6 @@
     "@fortawesome/vue-fontawesome": "^0.1.9",
     "bootstrap": "^4.4.1",
     "jquery": "^3.4.1",
-    "marked": "^0.8.0",
     "monaco-editor-vue": "^1.0.9",
     "popper.js": "^1.16.0",
     "vue": "^2.6.10",

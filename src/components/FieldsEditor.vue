@@ -1,6 +1,6 @@
 <template>
 	<div class="page">
-		<h1>{{ pageTitle }}</h1>
+		<h1>{{ title }}</h1>
 		<form id="field-form" class="row" v-on:submit="onSubmit">
 			<div class="col form-group form-group--inline">
 				<label class="mr-4">Name:</label>
@@ -10,28 +10,21 @@
 				<button type="submit" class="btn btn-primary" v-on:click="onSubmit">Submit</button>
 			</div>
 			<div class="col-12"></div>
-			<div class="col-6">
+			<div class="col-12">
 				<label>Content:</label>
-				<MonacoEditor height="500" :options="editorOptions" v-model="fieldContent" v-on:change="onSourceChange" language="markdown"></MonacoEditor>
-			</div>
-			<div class="col-6">
-				<label>Preview:</label>
-				<div v-html="compiledMarkdown"></div>
+				<MonacoEditor height="500" :options="editorOptions" v-model="fieldContent" language="html"></MonacoEditor>
 			</div>
 		</form>
 	</div>
 </template>
 <script>
 	import $ from 'jquery';
-	// TODO: santize output HTML!
-	import marked from 'marked';
 	import { getJWT } from '../js/storage.js';
 	import { getField, modifyField, fetchFields } from '../js/fields.js';
 
 	import MonacoEditor from 'monaco-editor-vue';
-	import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution.js';
+	import 'monaco-editor/esm/vs/basic-languages/html/html.contribution.js';
 
-	var compile_id;
 
 	export default {
 		data () {
@@ -39,8 +32,7 @@
 				fieldId: '',
 				fieldName: '',
 				fieldContent: '',
-				pageTitle: '',
-				input: '',
+				title: '',
 				editorOptions: {
 					minimap: { enabled: false },
 					automaticLayout: true
@@ -48,13 +40,6 @@
 			};
 		},
 		methods: {
-			onSourceChange (value) {
-				if (compile_id) clearInterval(compile_id);
-				compile_id = setInterval((function() {
-					// update value to trigger re-computing `compiledMarkdown`
-					this.input = value;
-				}).bind(this), 300);
-			},
 			onSubmit (e) {
 				// prevent default behaviour of submitting forms
 				e.preventDefault();
@@ -87,7 +72,7 @@
 				} else {
 					this.fieldName = field.name;
 					this.fieldContent = field.content;
-					this.pageTitle = 'Edit Field "' + this.fieldName + '"';
+					this.title = 'Edit Field "' + this.fieldName + '"';
 				}
 			},
 			handleCreateResponse (data) {
@@ -99,21 +84,15 @@
 				console.log(data);
 			}
 		},
-		computed: {
-			compiledMarkdown () {
-				return marked(this.input); 
-			}
-		},
 		components: { MonacoEditor },
 		mounted () {
 			this.fieldId = this.$route.params.id;
 
 			if (!this.fieldId) {
-				this.pageTitle = 'Create new Field';
+				this.title = 'Create new Field';
 			} else {
 				this.tryLoad(0);
 			}
 		}
-		//components: { Multipane, MultipaneResizer }
 	}
 </script>

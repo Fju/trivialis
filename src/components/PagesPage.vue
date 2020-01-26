@@ -27,7 +27,7 @@
 					<td>{{ row.route }}</td>
 					<td>{{ row.layout }}</td>
 					<td class="small-col">
-						<router-link :to="row.to" class="btn btn-primary btn-sm">
+						<router-link :to="{ name: 'Pages/Edit', params: { id: row.id } }" class="btn btn-primary btn-sm">
 							<fa icon="edit"></fa> Edit
 						</router-link>
 						<button class="btn btn-danger btn-sm" v-on:click="onDeleteClick(row.id, row.name)">
@@ -73,17 +73,17 @@
 				fetchPages((function(data) {
 					if (data.err) console.log(data.err);
 					if (data.pages) this.rows = data.pages.map(page => {
-						page.to = { name: 'Pages/Edit', params: { id: page.id } };
-
 						// show layout name instead of id
 						// if there is no layout display "-"
 						var layout = getPage(page.layout);
-						if (layout) page.layout = layout.name;
-						else page.layout = '-';
+						if (layout) layout = layout.name;
 
-						if (!page.route) page.route = '-';
-
-						return page;
+						return {
+							id: page.id,
+							name: page.name,
+							route: page.route || '-',
+							layout: layout || '-',
+						}
 					});		
 				}).bind(this));
 			},

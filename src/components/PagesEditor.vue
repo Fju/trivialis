@@ -13,6 +13,7 @@
 			<div class="col form-group form-group--inline">
 				<label class="mr-4">Layout:</label>
 				<select class="form-control" v-model="pageLayout">
+					<option value="0"> - </option>
 					<option v-for="layout in layouts" :value="layout.id">{{ layout.name }}</option>
 				</select>
 			</div>
@@ -39,7 +40,7 @@
 				title: '',
 				pageId: '',
 				pageName: '',
-				pageRoute: '',
+				pageRoute: null,
 				pageLayout: null,
 				pageContent: '',
 				editorOptions: {
@@ -58,11 +59,14 @@
 				// prevent default behaviour of submitting forms
 				e.preventDefault();
 
+				var layout = this.pageLayout;
+				if (layout === 0) layout = null;
+
 				var parameters = {
 					id: this.pageId,
 					name: this.pageName,
 					route: this.pageRoute,
-					layout: this.pageLayout,
+					layout: layout,
 					content: this.pageContent
 				};
 
@@ -87,8 +91,8 @@
 					}).bind(this));
 				} else {
 					this.pageName = page.name;
-					this.pageRoute = page.route;
-					this.pageLayout = page.layout;
+					this.pageRoute = page.route || '';
+					this.pageLayout = page.layout || 0;
 					this.pageContent = page.content;
 					this.title = 'Edit Page "' + this.pageName + '"';
 				}
@@ -106,6 +110,11 @@
 
 			if (!this.pageId) {
 				this.title = 'Create new Page';
+				// set to default values
+				this.pageName = '';
+				this.pageRoute = '';
+				this.pageLayout = 0;
+				this.pageContent = '';
 			} else {
 				this.tryLoad(0);
 			}
