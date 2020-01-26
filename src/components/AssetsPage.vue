@@ -92,6 +92,27 @@
 				</div>
 			</div>
 		</div>
+		<div class="modal fade" id="create-dir-modal" tabindex="-1" role="dialog" aria-labelledby="create-dir-modal-label" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="create-dir-modal-label">Create a new directory</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Set the name of the new directory:</p>
+						<input type="text" class="form-control" v-model="createDirname" />
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-primary" v-on:click="onCreateSubmit">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</div>
 </template>
 <script>
@@ -106,6 +127,7 @@
 		data () {
 			return {
 				deleteFilename: '',
+				createDirname: '',
 				dragOverlay: false,
 				files: [],
 				cwd: ''
@@ -172,13 +194,14 @@
 				this.update(this.cwd + '/' + name);
 			},
 			onCreateClick () {
-				this.files.unshift({
-					name: 'New folder',
-					type: 'dir',
-					state: 'create'
-				});	
+				this.createDirname = 'New folder';
+				$('#create-dir-modal').modal('show');
 			},
-			uploadFiles (files) {
+			onCreateSubmit () {
+				console.log('create dir:', this.createDirname);
+				$('#create-dir-modal').modal('hide');
+			},
+			uploadFile (files) {
 				[].forEach.call(files, (function(f) { 
 					var file = {
 						name: f.name,

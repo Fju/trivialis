@@ -77,7 +77,6 @@
 				}).bind(this));
 			},
 			onRenameSubmit () {
-
 				this.$emit('rename', this.item, this.rename);
 			},
 			onRenameCancel () {
