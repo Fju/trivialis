@@ -45,12 +45,14 @@
 					<td></td>
 					<td></td>
 				</tr>
-				<tr v-for="file in files" :class="{ 'row-danger': file.state === 'error', 'row-pending': file.state === 'uploading' }">
+				<assets-item v-for="file in files" :item="file"
+					v-on:navigate="onNavigate" v-on:rename="onRename" v-on:delete="onDelete"></assets-item>
+				<!--<tr v-for="file in files" :class="{ 'row-danger': file.state === 'error', 'row-pending': file.state === 'uploading' }">
 					<td class="small-col text-center">
 						<fa :icon="getFileIcon(file.type)" size="lg"></fa>
 					</td>
 					<td>
-						<!-- TODO: make this less complicated -->
+						!-- TODO: make this less complicated --
 						<span v-if="file.type === 'file'" :class="{ hidden: file.state === 'rename' }">{{ file.name }}</span>
 						<a href="" v-else :class="{ hidden: file.state === 'rename' }" v-on:click.prevent="update(cwd + '/' + file.name)">{{ file.name }}</a>
 						<div class="form-inline" :class="{ hidden: file.state !== 'rename' }">
@@ -70,7 +72,7 @@
 						<button class="btn btn-primary btn-sm" v-on:click="onRenameClick(file)"><fa icon="edit"></fa> Rename</button>
 						<button class="btn btn-danger btn-sm" v-on:click="openDeleteModal(file)"><fa icon="trash-alt"></fa> Delete</button>
 					</td>
-				</tr>
+				</tr>-->
 			</tbody>
 		</table>
 		<div class="modal fade" id="delete-assets-modal" tabindex="-1" role="dialog" aria-labelledby="delete-assets-modal-label" aria-hidden="true">
@@ -93,32 +95,12 @@
 	</div>
 </template>
 <script>
+	import AssetsItem from './AssetsItem.vue';
 	import $ from 'jquery';
 	import { uploadFile, deleteFile, renameFile, getFiles } from '../js/assets.js';
 
-	const MAX_FILE_SIZE = 25 * 1024 * 1024; // 1 MB
+	const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
 	const ERROR_LIFESPAN = 7 * 1000; // 7 seconds
-
-	function formatFilesize(size) {
-		if (size === undefined) return '-';
-
-		var i = 0;
-		while (size > 1000) {
-			size /= 1024;
-			i++;
-		}
-
-		var suffix = 'B';
-		switch(i) {
-			case 1: suffix = 'KB'; break;
-			case 2: suffix = 'MB'; break;
-			case 3: suffix = 'GB'; break;
-			case 4: suffix = 'TB'; break;
-		}
-	
-		if (i === 0) return size + ' ' + suffix;
-		else return size.toFixed(1) + ' ' + suffix;
-	}
 
 	export default {
 		data () {
@@ -160,7 +142,7 @@
 							this.files.push({
 								name: data.contents[i].name,
 								type: data.contents[i].type,
-								size: formatFilesize(data.contents[i].size),
+								size: data.contents[i].size,
 								state: 'ok'
 							});
 						}
@@ -170,14 +152,6 @@
 			onUploadClick () {
 				$('#file-input').click();
 			},
-			openDeleteModal (file) {
-				this.deleteFilename = file.name;
-				$('#delete-assets-modal').modal('show');
-			},
-			onRenameClick (file) {
-				file.state = 'rename';
-				file.new_name = file.name;
-			},
 			onDeleteSubmit () {
 				$('#delete-assets-modal').modal('hide');	
 				deleteFile(this.deleteFilename, (function(data) {
@@ -185,27 +159,30 @@
 					else this.update(this.cwd);
 				}).bind(this));
 			},
-			onRenameSubmit (file) {
-				if (file.new_name === file.name) {
-					file.state = 'ok';	
-				} else {
-					renameFile(this.cwd + '/' + file.name, this.cwd + '/' + file.new_name, (function(data) {
-						file.state = 'ok';
-						this.update(this.cwd);
-					}).bind(this));	
-				}
+			onRename (file, rename) {
+				renameFile(this.cwd + '/' + file.name, this.cwd + '/' + rename, (function(data) {
+					this.update(this.cwd);
+				}).bind(this));	
 			},
-			onRenameCancel (file) {
-				file.state = 'ok';
+			onDelete (name) {
+				this.deleteFilename = name;
+				$('#delete-assets-modal').modal('show');
+			},
+			onNavigate (name) {
+				this.update(this.cwd + '/' + name);
 			},
 			onCreateClick () {
-					
+				this.files.unshift({
+					name: 'New folder',
+					type: 'dir',
+					state: 'create'
+				});	
 			},
 			uploadFiles (files) {
 				[].forEach.call(files, (function(f) { 
 					var file = {
 						name: f.name,
-						size: formatFilesize(f.size),
+						size: f.size,
 						type: 'file',
 						state: 'uploading'
 					};
@@ -238,10 +215,6 @@
 				e.preventDefault();
 				this.uploadFiles(e.dataTransfer.files);
 				this.dragOverlay = false;
-			},
-			getFileIcon (type) {
-				if (type === 'dir') return 'folder';
-				else if (type === 'file') return 'file';
 			}
 		},
 		mounted () {
@@ -258,6 +231,7 @@
 			$('#file-input').on('change', (function(e) {
 				this.uploadFiles(e.target.files);
 			}).bind(this));
-		}
+		},
+		components: { AssetsItem }
 	}
 </script>
