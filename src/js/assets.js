@@ -43,6 +43,19 @@ export function renameFile(name, name_new, callback) {
 	});
 }
 
+export function createDir(name, callback) {
+	request({
+		url: '/backend/assets.php',
+		method: 'POST',
+		data: {
+			method: 'mkdir',
+			name: name
+		}
+	}, d => {
+		if (typeof callback === 'function') callback(d);
+	});
+}
+
 export function getFiles(path, callback) {
 	console.log('get files', path);
 	request({ url: '/backend/assets.php', method: 'GET', data: { path: path } }, data => {

@@ -118,7 +118,7 @@
 <script>
 	import AssetsItem from './AssetsItem.vue';
 	import $ from 'jquery';
-	import { uploadFile, deleteFile, renameFile, getFiles } from '../js/assets.js';
+	import { uploadFile, deleteFile, renameFile, getFiles, createDir } from '../js/assets.js';
 
 	const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
 	const ERROR_LIFESPAN = 7 * 1000; // 7 seconds
@@ -198,8 +198,11 @@
 				$('#create-dir-modal').modal('show');
 			},
 			onCreateSubmit () {
-				console.log('create dir:', this.createDirname);
 				$('#create-dir-modal').modal('hide');
+				createDir(this.createDirname, (function(data) {
+					if (data.err) console.error(data.err);
+					else this.update(this.cwd);
+				}).bind(this));
 			},
 			uploadFile (files) {
 				[].forEach.call(files, (function(f) { 

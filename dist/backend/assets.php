@@ -56,7 +56,7 @@ function modifyFiles() {
 		try {
 			Files::createDir($_POST["name"]);
 		} catch (Exception $e) {
-			$response["err"] = "Unable to create new directory";
+			$response["err"] = $e->getError();//"Unable to create new directory";
 			return $response;
 		}
 	}

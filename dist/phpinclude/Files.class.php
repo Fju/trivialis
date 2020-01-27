@@ -109,7 +109,9 @@ class Files {
 	}
 
 	public static function createDir($path) {
-		$name = self::getRealPath($path);
-		mkdir($name);
+		$dirname = self::getRealPath(dirname($path));
+		$basename = self::santizeName(basename($path));
+
+		mkdir($dirname . "/" . $basename);
 	}
 }
