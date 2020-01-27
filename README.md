@@ -1,6 +1,6 @@
 # trivialis
 
-:warning: under construction :warning:
+:warning: **under construction** :warning:
 
 Super simple and lightweight Content Management System especially designed for single page websites.
 
