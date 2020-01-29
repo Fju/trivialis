@@ -6,3 +6,4 @@ dist/*
 !dist/.htaccess
 !dist/config.yml
 !dist/composer.*
+!dist/proxy.php
