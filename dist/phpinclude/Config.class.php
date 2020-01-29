@@ -11,7 +11,8 @@ class Config {
 	private static $config = array();
 
 	public static function init($path) {
-		if (!file_exists($path)) return;
+		$path = realpath($_SERVER["DOCUMENT_ROOT"] . "/" . $path);
+		if ($path === false) return;
 		
 		self::$config = Yaml::parseFile($path);
 	}
@@ -71,4 +72,4 @@ class Config {
 
 }
 
-Config::init("../config.yml");
+Config::init("config.yml");

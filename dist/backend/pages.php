@@ -41,7 +41,7 @@ function setPages() {
 		// `get_post_param` escapes parameter by default
 		$id = get_post_param("id");
 		$name = get_post_param("name");
-		$content = get_post_param("content");
+		$content = get_post_param("content", false);
 		$route = get_post_param("route");
 		$layout = get_post_param("layout");
 
@@ -51,6 +51,8 @@ function setPages() {
 				$response["err"] = "An ID has to be specified when updating a page.";
 				return $response;
 			}
+			// TODO: how to deal with null-able attributes?
+			if ($layout === "") $layout = null;
 
 			$statement = DB::prepare("UPDATE pages SET name=?, content=?, route=?, layout=? WHERE id = ?");
 			$statement->bind_param("sssdd", $name, $content, $route, $layout, $id);
@@ -87,7 +89,7 @@ function setPages() {
 			$response["err"] = "name parameter must be unique";
 		} else if ($err_code === 1452) {
 			// foreign key constraint violated
-			$response["err"] = "Specified layout parameter is invalid";
+			$response["err"] = "Specified layout parameter is invalid ($layout)";
 		} else var_dump($e);
 	} finally {
 		if ($statement) $statement->close();
