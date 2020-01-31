@@ -35,17 +35,27 @@ class Files {
 					"size" => filesize($path)
 				);	
 			} else if (is_dir($path)) {
+				$size = self::getDirSize($path);
 				$data["contents"][] = array(
 					"name" => $entry,
-					"type" => "dir"
+					"type" => "dir",
+					"size" => $size
 				);
 			}
 		}
 		return $data;
 	}
 
-	public static function uploadFile() {
-		$dirname = self::getRealPath(dirname($_FILES["file"]["name"]));
+	private static function getDirSize($path) {
+		// helper function for getting the size of directory (sum of the filesize of the contents)
+		$io = popen("ls -ltrR \"$path\" | awk \"{print \\$5}\" | awk \"BEGIN{sum=0} {sum=sum+\\$1} END {print sum}\"", "r");
+		$size = intval(fgets($io, 80));
+		pclose($io);
+		return $size;
+	}
+
+	public static function uploadFile($cwd) {
+		$dirname = self::getRealPath($cwd . "/" . dirname($_FILES["file"]["name"]));
 		$basename = self::santizeName(basename($_FILES["file"]["name"]));
 
 		$path = $dirname . "/" . $basename;

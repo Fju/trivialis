@@ -1,6 +1,7 @@
 <?php
 require_once "Authorizer.class.php";
 require_once "Files.class.php";
+require_once "Utils.php";
 
 // header information
 header("Content-Type: application/json; charset=utf-8");
@@ -13,10 +14,20 @@ function getFiles() {
 
 function modifyFiles() {
 	$response = array();
+	
+	$authorized = Authorizer::authorize();
+	if ($authorized !== Authorizer::JWT_VALID) {
+		$response["unauth"] = $authorized;
+		return $response;
+	}
+
+
+	$method = get_post_param("method");
+	$cwd = get_post_param("cwd", false);
 
 	if ($_POST["method"] === "upload") {
 		try {
-			Files::uploadFile();
+			Files::uploadFile($cwd);
 		} catch (InvalidConfigurationException $e) {
 			$response["err"] = "Trivialis is configured improperly";
 			return $response;

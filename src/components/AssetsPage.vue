@@ -204,7 +204,7 @@
 					else this.update(this.cwd);
 				}).bind(this));
 			},
-			uploadFile (files) {
+			uploadFiles (files) {
 				[].forEach.call(files, (function(f) { 
 					var file = {
 						name: f.name,
@@ -221,7 +221,8 @@
 						file.until = Date.now() + ERROR_LIFESPAN;
 						return;
 					}
-					uploadFile(f, (function(data) {
+
+					uploadFile(f, this.cwd, (function(data) {
 						if (data.err) {
 							file.state = 'error';
 							file.err = data.err;

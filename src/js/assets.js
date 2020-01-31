@@ -1,9 +1,10 @@
 import { request } from './globals.js';
 
-export function uploadFile(file, callback) {
+export function uploadFile(file, cwd, callback) {
 	let data = new FormData();
 	data.append('file', file);
 	data.append('method', 'upload');
+	data.append('cwd', cwd);
 			
 	request({ 
 		url: '/backend/assets.php',
