@@ -10,13 +10,6 @@
 				<label class="mr-4">Route:</label>
 				<input type="text" class="form-control" v-model="pageRoute" />
 			</div>
-			<div class="col form-group form-group--inline">
-				<label class="mr-4">Layout:</label>
-				<select class="form-control" v-model="pageLayout">
-					<option value="0"> - </option>
-					<option v-for="layout in layouts" :value="layout.id">{{ layout.name }}</option>
-				</select>
-			</div>
 			<div class="col-auto">
 				<button type="submit" class="btn btn-primary" v-on:click="onSubmit">Submit</button>
 			</div>
@@ -41,7 +34,6 @@
 				pageId: '',
 				pageName: '',
 				pageRoute: null,
-				pageLayout: null,
 				pageContent: '',
 				editorOptions: {
 					minimap: { enabled: false },
@@ -49,24 +41,15 @@
 				}
 			};
 		},
-		computed: {
-			layouts () {
-				return getPages();
-			}
-		},
 		methods: {
 			onSubmit (e) {
 				// prevent default behaviour of submitting forms
 				e.preventDefault();
 
-				var layout = this.pageLayout;
-				if (layout === 0) layout = null;
-
 				var parameters = {
 					id: this.pageId,
 					name: this.pageName,
 					route: this.pageRoute,
-					layout: layout,
 					content: this.pageContent
 				};
 
@@ -92,7 +75,6 @@
 				} else {
 					this.pageName = page.name;
 					this.pageRoute = page.route || '';
-					this.pageLayout = page.layout || 0;
 					this.pageContent = page.content;
 					this.title = 'Edit Page "' + this.pageName + '"';
 				}
@@ -113,7 +95,6 @@
 				// set to default values
 				this.pageName = '';
 				this.pageRoute = '';
-				this.pageLayout = 0;
 				this.pageContent = '';
 			} else {
 				this.tryLoad(0);

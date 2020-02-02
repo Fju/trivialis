@@ -9,22 +9,26 @@ class FileExistsException extends Exception {}
 
 class Files {
 
-	public static function getContents($cwd) {
+	public static function getContents($base_path) {
 		$data = [];
 		
-		$cwd = self::getRealPath($cwd);
+		$base_path = self::getRealPath($base_path);
+
+		// cut off the
+		$cwd = substr($base_path, strlen(Config::getAssetsDir()) + 1);
+		if ($cwd === false) $cwd = "";
 
 		$data["cwd"] = $cwd;
 		$data["contents"] = [];
 
 		// sort file entries by name
 		// TODO: maybe directories first then files
-		$entries = scandir($cwd, SCANDIR_SORT_ASCENDING);
+		$entries = scandir($base_path, SCANDIR_SORT_ASCENDING);
 		foreach ($entries as $entry) {
 			// skip `..` and `.`
 			if ($entry === "." || $entry === "..") continue;
 
-			$path = $cwd . "/" . $entry;				
+			$path = $base_path . "/" . $entry;				
 			if (is_file($path)) {
 				$data["contents"][] = [
 					"name" => $entry,
