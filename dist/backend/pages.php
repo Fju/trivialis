@@ -9,7 +9,7 @@ header("Content-Type: application/json; charset=utf-8");
 header("Access-Control-Allow-Methods: GET, POST");
 
 function getPages() {
-	$response = array();
+	$response = [];
 	
 	$authorized = Authorizer::authorize();
 	if ($authorized !== Authorizer::JWT_VALID) {
@@ -29,7 +29,7 @@ function getPages() {
 }
 
 function setPages() {
-	$response = array();
+	$response = [];
 	
 	$authorized = Authorizer::authorize();
 	if ($authorized !== Authorizer::JWT_VALID) {
@@ -41,9 +41,9 @@ function setPages() {
 		// `get_post_param` escapes parameter by default
 		$id = get_post_param("id");
 		$name = get_post_param("name");
-		$content = get_post_param("content", false);
+		$content = get_post_param("content");
 		$route = get_post_param("route");
-		$layout = get_post_param("layout");
+		//$layout = get_post_param("layout");
 
 		if ($_POST["method"] === "update") {
 			// check obligatory parameters
@@ -52,10 +52,10 @@ function setPages() {
 				return $response;
 			}
 			// TODO: how to deal with null-able attributes?
-			if ($layout === "") $layout = null;
+			//if ($layout === "") $layout = null;
 
-			$statement = DB::prepare("UPDATE pages SET name=?, content=?, route=?, layout=? WHERE id = ?");
-			$statement->bind_param("sssdd", $name, $content, $route, $layout, $id);
+			$statement = DB::prepare("UPDATE pages SET name=?, content=?, route=? WHERE id = ?");
+			$statement->bind_param("sssdd", $name, $content, $route, $id);
 
 			DB::exec_statement($statement);
 		} else if ($_POST["method"] === "create") {
@@ -65,8 +65,8 @@ function setPages() {
 				return $response;
 			}
 
-			$statement = DB::prepare("INSERT INTO pages (name, content, route, layout) VALUES (?, ?, ?, ?)");
-			$statement->bind_param("sssd", $name, $content, $route, $layout);
+			$statement = DB::prepare("INSERT INTO pages (name, content, route) VALUES (?, ?, ?)");
+			$statement->bind_param("sssd", $name, $content, $route);
 
 			DB::exec_statement($statement);
 		} else if ($_POST["method"] === "delete") {
@@ -87,9 +87,6 @@ function setPages() {
 		if ($err_code === 1062) {
 			// duplicate entry
 			$response["err"] = "name parameter must be unique";
-		} else if ($err_code === 1452) {
-			// foreign key constraint violated
-			$response["err"] = "Specified layout parameter is invalid ($layout)";
 		} else var_dump($e);
 	} finally {
 		if ($statement) $statement->close();

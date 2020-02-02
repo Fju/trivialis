@@ -8,70 +8,71 @@ header("Content-Type: application/json; charset=utf-8");
 header("Access-Control-Allow-Methods: GET, POST");
 
 function getFiles() {
-	$response = Files::getContents($_GET["path"]);
-	return $response;
-}
+	$response = [];
 
-function modifyFiles() {
-	$response = array();
-	
 	$authorized = Authorizer::authorize();
 	if ($authorized !== Authorizer::JWT_VALID) {
 		$response["unauth"] = $authorized;
 		return $response;
 	}
 
-
-	$method = get_post_param("method");
-	$cwd = get_post_param("cwd", false);
-
-	if ($_POST["method"] === "upload") {
-		try {
-			Files::uploadFile($cwd);
-		} catch (InvalidConfigurationException $e) {
-			$response["err"] = "Trivialis is configured improperly";
-			return $response;
-		} catch (Exception $e) {
-			$response["err"] = "Unable to save uploaded file!";
-			return $response;
-		}
-	} else if ($_POST["method"] === "delete") {
-		if (!isset($_POST["name"])) {
-			$response["err"] = "Not enough parameters provided";
-			return $response;
-		}
-		try {
-			Files::deleteFile($_POST["name"]);
-		} catch (Exception $e) {
-			$response["err"] = "Unable to delete file";
-			return $response;
-		}
-	} else if ($_POST["method"] === "rename") {
-		if (!isset($_POST["name"]) || !isset($_POST["name_new"])) {
-			$response["err"] = "Not enough parameters provided";
-			return $response;
-		}
-
-		try {
-			Files::renameFile($_POST["name"], $_POST["name_new"]);
-		} catch (Exception $e) {
-			$response["err"] = "Unable to rename file";
-			return $response;
-		}
-	} else if ($_POST["method"] === "mkdir") {
-		if (!isset($_POST["name"])) {
-			$response["err"] = "No directory name provided";
-			return $response;
-		}
-
-		try {
-			Files::createDir($_POST["name"]);
-		} catch (Exception $e) {
-			$response["err"] = $e->getError();//"Unable to create new directory";
-			return $response;
-		}
+	try {
+		$response = Files::getContents($_GET["path"]);
+	} catch (IllegalPathException $e) {
+		$response["err"] = "Illegal path";
+	} catch (NonExistingPathException $e) {
+		$response["err"] = "Invalid path";
+	} catch (InvalidConfigurationException $e) {
+		$response["err"] = "Trivialis is configured improperly";
 	}
 
+	return $response;
+}
+
+function modifyFiles() {
+	$response = [];
+	
+	$authorized = Authorizer::authorize();
+	if ($authorized !== Authorizer::JWT_VALID) {
+		$response["unauth"] = $authorized;
+		return $response;
+	}
+	
+	$cwd = get_post_param("cwd");
+	$name = get_post_param("name");
+	$name_new = get_post_param("name_new");
+
+	try {
+		if ($_POST["method"] === "upload") {
+			Files::uploadFile($cwd);
+		} else if ($_POST["method"] === "delete") {
+			if ($name === null) {
+				$response["err"] = "Not enough parameters";
+				return $response;
+			}
+			Files::deleteFile($name);
+		} else if ($_POST["method"] === "rename") {
+			if ($name === null && $name_new === null) {
+				$response["err"] = "Not enough parameters";
+				return $response;
+			}
+			Files::renameFile($name, $name_new);
+		} else if ($_POST["method"] === "mkdir") {
+			if ($name === null) {
+				$response["err"] = "Not enough parameters";
+				return $response;
+			}
+			Files::createDir($name);
+		}
+	} catch(InvalidConfigurationException $e) {
+		$response["err"] = "Trivialis is configured improperly";
+	} catch(IllegalPathException $e) {
+		$response["err"] = "Illegal path";
+	} catch(NonExistingPathException $e) {
+		$response["err"] = "Invalid path";
+	} catch (Exception $e) {
+		$response["err"] = "Internal error." . $e->getError();
+	}
 
 	return $response;
 }

@@ -10,7 +10,7 @@ header("Access-Control-Allow-Methods: GET, POST");
 
 
 function getFields() {
-	$response = array();
+	$response = [];
 	
 	$authorized = Authorizer::authorize();
 	// TODO: return error code (e. g. empty token, malformed token, expired token, etc.)
@@ -31,7 +31,7 @@ function getFields() {
 }
 
 function setFields() {
-	$response = array();
+	$response = [];
 
 	$authorized = Authorizer::authorize();
 	// TODO: return error code (e. g. empty token, malformed token, expired token, etc.)
@@ -40,14 +40,14 @@ function setFields() {
 		return $response;
 	}
 
-	try {
-		$id = get_post_param("id");
-		$name = get_post_param("name");
-		$content = get_post_param("content");
+	$id = get_post_param("id");
+	$name = get_post_param("name");
+	$content = get_post_param("content");
 
+	try {
 		if ($_POST["method"] === "update") {
 			// check obligatory parameters
-			if ($id === false) {
+			if ($id === null) {
 				$response["err"] = "An ID must be provided when updating a field";
 				return $response;
 			}
@@ -58,7 +58,7 @@ function setFields() {
 			DB::exec_statement($statement);
 		} else if ($_POST["method"] === "create") {
 			// check parameters
-			if ($name === false) {
+			if ($name === null) {
 				$response["err"] = "A name must be provided when creating a new field";
 				return $response;
 			}
@@ -67,11 +67,9 @@ function setFields() {
 			$statement->bind_param("ss", $name, $content);
 
 			DB::exec_statement($statement);
-
-			//DB::exec("INSERT INTO fields (name, content) VALUES ('$name', '$content')");	
 		} else if ($_POST["method"] === "delete") {
 			// check parameters
-			if ($id === false) {
+			if ($id === null) {
 				$response["err"] = "An ID must be provided when deleting a field";
 				return $response;
 			}
@@ -80,7 +78,6 @@ function setFields() {
 			$statement->bind_param("d", $id);
 
 			DB::exec_statement($statement);
-			//DB::exec("DELETE FROM fields WHERE id = $id");
 		} else {
 			// invalid method parameter provided
 			$response["err"] = "Invalid value for method parameter";

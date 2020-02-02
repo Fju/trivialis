@@ -5,42 +5,39 @@ require_once "Config.class.php";
 
 class IllegalPathException extends Exception {}
 class NonExistingPathException extends Exception {}
+class FileExistsException extends Exception {}
 
 class Files {
 
-	public static function getContents($base_path) {
+	public static function getContents($cwd) {
 		$data = [];
 		
-		$base_path = self::getRealPath($base_path);
-		
-		if (!is_dir($base_path)) return [];
-
-		$cwd = substr($base_path, strlen(Config::getAssetsDir()) + 1);
-		if ($cwd === false) $cwd = "";
-
+		$cwd = self::getRealPath($cwd);
 
 		$data["cwd"] = $cwd;
 		$data["contents"] = [];
 
-		$entries = scandir($base_path, SCANDIR_SORT_ASCENDING);
+		// sort file entries by name
+		// TODO: maybe directories first then files
+		$entries = scandir($cwd, SCANDIR_SORT_ASCENDING);
 		foreach ($entries as $entry) {
 			// skip `..` and `.`
 			if ($entry === "." || $entry === "..") continue;
 
-			$path = $base_path . "/" . $entry;				
+			$path = $cwd . "/" . $entry;				
 			if (is_file($path)) {
-				$data["contents"][] = array(
+				$data["contents"][] = [
 					"name" => $entry,
 					"type" => "file",
 					"size" => filesize($path)
-				);	
+				];
 			} else if (is_dir($path)) {
 				$size = self::getDirSize($path);
-				$data["contents"][] = array(
+				$data["contents"][] = [
 					"name" => $entry,
 					"type" => "dir",
 					"size" => $size
-				);
+				];
 			}
 		}
 		return $data;
@@ -55,17 +52,16 @@ class Files {
 	}
 
 	public static function uploadFile($cwd) {
-		$dirname = self::getRealPath($cwd . "/" . dirname($_FILES["file"]["name"]));
-		$basename = self::santizeName(basename($_FILES["file"]["name"]));
+		$dirname = self::getRealPath($cwd);
+		$basename = self::santizeName($_FILES["file"]["name"]);
 
 		$path = $dirname . "/" . $basename;
 
 		if (file_exists($path)) {
-			$response["err"] = "Filename already exists";
-			return $response;
+			throw new FileExistsException();
 		}
+		// move file from temporary directory to the desired destination
 		move_uploaded_file($_FILES["file"]["tmp_name"], $path);
-
 	}
 
 	public static function getRealPath($path) {
@@ -73,6 +69,7 @@ class Files {
 		$path = realpath($asset_dir . "/" . $path);
 
 		if ($path === false) {
+			// directory doesn't exist
 			throw new NonExistingPathException();
 		}
 
@@ -89,7 +86,7 @@ class Files {
 		// santize filename, illegal characters will be removed
 		// allowed: A-Z, a-z, 0-9 and special characters like -._~,;[]()
 		// multiple occurences of dots (.) will be replaced with a single dot
-		$name = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\)\.])", "", $name);
+		$name = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\)\.])", "_", $name);
 		$name = mb_ereg_replace("([\.]{2,})", ".", $name);
 
 		return $name;
@@ -99,6 +96,7 @@ class Files {
 		$path = self::getRealPath($path);
 
 		// recursively delete directories that are not empty
+		// TODO: `rmdir` only works with empty directories 
 		if (is_dir($path)) rmdir($path);
 		else if (is_file($path)) unlink($path);
 	}
