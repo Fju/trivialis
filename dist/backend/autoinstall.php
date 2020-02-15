@@ -4,11 +4,30 @@ require_once "DB.class.php";
 require_once "Config.class.php";
 
 
+header("Content-Type: text/plain; charset=utf-8");
+
+echo "Installing Trivialis CMS version 0.0.1\n\n";
+
+const RESULT_WARN = 1;
+const RESULT_ERROR = 2;
+const RESULT_INFO = 0;
+
+function output($type, $message) {
+	switch ($type) {
+		case RESULT_ERROR:
+			echo "ERROR: $message\n";
+			break;
+		case RESULT_WARN:
+			echo "WARN: $message\n";
+			break;
+		default:
+			echo "INFO: $message\n";
+	}
+}
+
 // TODO: generate default config
 // TODO: create random key for signing web tokens!
 // TODO: accept GET parameters
-// TODO: error handling / retries
-// TODO: progress outputs
 
 function createUsers() {
 	// drop user table (for development only)
@@ -20,20 +39,44 @@ function createUsers() {
 		role ENUM('admin', 'other')	DEFAULT 'other'
 	);");
 
-	// TODO: read from config file
-	$users = Config::getUsers();
-	//var_dump($users);
+	try {
+		// obtain array of users from configuration file
+		$users = Config::getUsers();
 
-	// insert row for each user specified in the config
-	foreach ($users as $user) {
-		$username = DB::escape($user["username"]);
-		$password = DB::escape(password_hash($user["password"], PASSWORD_BCRYPT));
-		$role = DB::escape($user["role"]);
-		DB::exec("INSERT INTO users (username, password, role) VALUES ('$username', '$password', '$role');");
+		// check if there is an admin user defined
+		$has_admin = false;
+		foreach ($users as $user) {
+			if ($user["role"] === "admin") {
+				$has_admin = true;
+				break;
+			}
+		}	
+		// abort setup if there is no admin user defined
+		if (!$has_admin) {
+			output(RESULT_ERROR, "There is no admin user defined in the configuration file");
+			return 0;
+		}
+
+		$statement = DB::prepare("INSERT INTO users VALUES (?, ?, ?)");
+		// insert row for each user specified in the config
+		foreach ($users as $user) {
+			$username = $user["username"];
+			$password = password_hash($user["password"], PASSWORD_BCRYPT);
+			$role = $user["role"];
+
+			output(RESULT_INFO, "Creating user '$username' with role '$role'");
+
+			$statement->bind_param("sss", $username, $password, $role);
+			DB::exec_statement($statement);
+		}
+		$statement->close();
+	} catch (InvalidConfigurationException $e) {
+		output(RESULT_ERROR, "The configuration file is invalid");	
+		return 0;
 	}
 
-
-	echo "Erfolgreich installiert";
+	output(RESULT_INFO, "User setup successfully completed");
+	return 1;
 }
 
 function createFields() {
@@ -46,7 +89,8 @@ function createFields() {
 		content TEXT
 	)");
 
-	echo "Alles fresh";
+	output(RESULT_INFO, "Fields setup successfully completed");
+	return 1;
 }
 
 
@@ -65,10 +109,18 @@ function createPages() {
 		route VARCHAR(50) NULL UNIQUE,
 		content TEXT NULL
 	)");
+
+	output(RESULT_INFO, "Pages setup successfully completed");
+	return 1;
 }
 
+try {
+	$success = createUsers() && createFields() && createPages();
 
-//createUsers();
-//createFields();
-createPages();
+	if ($success) echo "\nSuccess!\n";
+	else echo "\nFailed!\n";
+} catch (DBException $e) {
+	output(RESULT_ERROR, "Unexpected database error, unable to install Trvialis");
+	echo "\nFailed!\n";
+}
 

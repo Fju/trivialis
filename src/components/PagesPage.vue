@@ -17,7 +17,6 @@
 				<tr>
 					<th>Name</th>
 					<th>Route</th>
-					<th>Layout</th>
 					<th></th>
 				</tr>
 			</thead>
@@ -25,7 +24,6 @@
 				<tr v-for="row in rows">
 					<td>{{ row.name }} ({{ row.id }})</td>
 					<td>{{ row.route }}</td>
-					<td>{{ row.layout }}</td>
 					<td class="small-col">
 						<router-link :to="{ name: 'Pages/Edit', params: { id: row.id } }" class="btn btn-primary btn-sm">
 							<fa icon="edit"></fa> Edit
@@ -73,16 +71,10 @@
 				fetchPages((function(data) {
 					if (data.err) console.log(data.err);
 					if (data.pages) this.rows = data.pages.map(page => {
-						// show layout name instead of id
-						// if there is no layout display "-"
-						var layout = getPage(page.layout);
-						if (layout) layout = layout.name;
-
 						return {
 							id: page.id,
 							name: page.name,
-							route: page.route || '-',
-							layout: layout || '-',
+							route: page.route || '-'
 						}
 					});		
 				}).bind(this));

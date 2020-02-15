@@ -55,7 +55,7 @@ function setPages() {
 			//if ($layout === "") $layout = null;
 
 			$statement = DB::prepare("UPDATE pages SET name=?, content=?, route=? WHERE id = ?");
-			$statement->bind_param("sssdd", $name, $content, $route, $id);
+			$statement->bind_param("sssd", $name, $content, $route, $id);
 
 			DB::exec_statement($statement);
 		} else if ($_POST["method"] === "create") {
@@ -66,7 +66,7 @@ function setPages() {
 			}
 
 			$statement = DB::prepare("INSERT INTO pages (name, content, route) VALUES (?, ?, ?)");
-			$statement->bind_param("sssd", $name, $content, $route);
+			$statement->bind_param("sss", $name, $content, $route);
 
 			DB::exec_statement($statement);
 		} else if ($_POST["method"] === "delete") {
