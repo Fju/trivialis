@@ -25,7 +25,7 @@
 					<td>{{ row.name }} ({{ row.id }})</td>
 					<td>{{ row.route }}</td>
 					<td class="small-col">
-						<a :href="row.route" target="_blank" class="btn btn-sm btn-success">
+						<a :href="row.link" target="_blank" class="btn btn-sm btn-success" :class="{ 'disabled': row.link === false }">
 							<fa icon="external-link-alt"></fa> View page
 						</a>
 						<router-link :to="{ name: 'Pages/Edit', params: { id: row.id } }" class="btn btn-primary btn-sm">
@@ -77,7 +77,8 @@
 						return {
 							id: page.id,
 							name: page.name,
-							route: page.route || '-'
+							route: page.route || '-',
+							link: page.route ? page.route : false
 						}
 					});		
 				}).bind(this));
