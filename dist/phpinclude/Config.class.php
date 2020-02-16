@@ -69,7 +69,6 @@ class Config {
 		}
 		return $_SERVER["DOCUMENT_ROOT"] . "/" . self::$config["files"]["assets_dir"];
 	}
-
 }
 
 Config::init("config.yml");

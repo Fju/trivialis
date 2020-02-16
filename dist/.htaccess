@@ -5,3 +5,15 @@ php_value include_path "/var/www/html:/var/www/html/phpinclude:/var/www/html/ven
 	Order Allow,Deny
 	Deny from all
 </Files>
+
+RewriteEngine on
+
+# look in assets directory first
+RewriteCond assets\/%{REQUEST_URI} -f
+RewriteRule ^(.+)$ assets/$1
+
+# try render pages via proxy script
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ /proxy.php?route=$1 [L]
+

@@ -7,8 +7,8 @@ header("Content-Type: text/html; charset=utf-8");
 header("Access-Control-Allow-Methods: GET");
 
 $pages = DB::query("SELECT * FROM pages");
-$templates = array();
-$routes = array();
+$templates = [];
+$routes = [];
 foreach ($pages as $page) {
 	$content = $page["content"];
 	if ($content === null) $content = "";
@@ -19,7 +19,7 @@ foreach ($pages as $page) {
 }
 
 $fields = DB::query("SELECT * FROM fields");
-$substitutes = array();
+$substitutes = [];
 foreach ($fields as $field) {
 	if ($field["content"] === null) continue;
 	$name = $field["name"];

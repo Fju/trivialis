@@ -25,6 +25,9 @@
 					<td>{{ row.name }} ({{ row.id }})</td>
 					<td>{{ row.route }}</td>
 					<td class="small-col">
+						<a :href="row.route" target="_blank" class="btn btn-sm btn-success">
+							<fa icon="external-link-alt"></fa> View page
+						</a>
 						<router-link :to="{ name: 'Pages/Edit', params: { id: row.id } }" class="btn btn-primary btn-sm">
 							<fa icon="edit"></fa> Edit
 						</router-link>

@@ -25,8 +25,6 @@ function output($type, $message) {
 	}
 }
 
-// TODO: generate default config
-// TODO: create random key for signing web tokens!
 // TODO: accept GET parameters
 
 function createUsers() {
@@ -116,6 +114,7 @@ function createPages() {
 
 try {
 	$success = createUsers() && createFields() && createPages();
+
 
 	if ($success) echo "\nSuccess!\n";
 	else echo "\nFailed!\n";
