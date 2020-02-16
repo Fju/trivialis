@@ -8,9 +8,7 @@
 			<router-link to="/pages" class="nav-link">Pages</router-link>
 		</li>
 		<li class="nav-item">
-			<router-link to="/assets" class="nav-link">
-				Assets <span class="badge badge-warning">beta</span>
-			</router-link>
+			<router-link to="/assets" class="nav-link">Assets</router-link>
 		</li>
 		<li class="nav-divider"></li>
 		<li class="nav-item">

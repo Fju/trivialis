@@ -34,6 +34,8 @@ $method = $_SERVER["REQUEST_METHOD"];
 $route = $_GET["route"];
 if ($method === "GET") {
 	if (isset($routes[$route])) {
+		// update view count
+		DB::increment_views($route);
 		echo $twig->render($routes[$route], $substitutes);
 	} else {
 		echo "<h1>404</h1>";

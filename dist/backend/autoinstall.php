@@ -112,8 +112,22 @@ function createPages() {
 	return 1;
 }
 
+function createStatistics() {
+	DB::exec("DROP TABLE IF EXISTS stats");
+
+	// `page_id` references a page, there is only one stats entry per page
+	// `views` is a numeric value that can be incremented whenever a page is requested
+	DB::exec("CREATE TABLE stats (
+		page_id INT PRIMARY KEY REFERENCES pages,
+		views INT
+	)");
+
+	output(RESULT_INFO, "Statistics setup successfully completed");
+	return 1;
+}
+
 try {
-	$success = createUsers() && createFields() && createPages();
+	$success = createUsers() && createFields() && createPages() && createStatistics();
 
 
 	if ($success) echo "\nSuccess!\n";

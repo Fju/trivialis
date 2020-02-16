@@ -58,7 +58,7 @@ class DB {
 	}	
 
 	public static function query($sql) {
-		$data = array();
+		$data = [];
 
 		if ($result = self::$conn->query($sql)) {
 			while ($row = $result->fetch_assoc()) {
@@ -92,6 +92,24 @@ class DB {
 
 	public static function escape($text) {
 		return self::$conn->real_escape_string($text);
+	}
+
+	public static function increment_views($route) {
+		try {
+			// statement increments the `views` attribute for a page or creates a new row
+			// if there is no entry in the stats table for the viewed page (setting `views` to 1)
+			$statement = self::prepare("INSERT INTO stats (page_id, views) VALUES ((
+				SELECT id FROM pages WHERE route = ?
+			), 1) ON DUPLICATE KEY UPDATE views = views + 1");
+			// resolve $route to the corresponding page id
+			$statement->bind_param("s", $route);
+
+			// if there is no page id found corresponding to $route the insert should fail (primary key is null)
+			self::exec_statement($statement);
+		} catch (DBException $e) {
+			// ignore exceptions
+			if ($statement) $statement->close();
+		}
 	}
 }
 
