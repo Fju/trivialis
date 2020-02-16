@@ -13,14 +13,14 @@ export function getField(id) {
 }
 
 export function fetchFields(callback) {
-	request({ url: '/backend/fields.php', method: 'GET' }, data => {
+	request({ url: '/api/fields.php', method: 'GET' }, data => {
 		if (data.fields) fields = data.fields;
 		if (typeof callback === 'function') callback(data);
 	});
 }
 
 export function modifyField(parameters, callback) {
-	request({ url: '/backend/fields.php', method: 'POST', data: parameters }, data => {
+	request({ url: '/api/fields.php', method: 'POST', data: parameters }, data => {
 		if (typeof callback === 'function') callback(data);	
 	});
 }

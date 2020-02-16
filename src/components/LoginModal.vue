@@ -51,7 +51,7 @@
 			onSubmit (e) {
 				// prevent submitting the form
 				e.preventDefault();
-				$.post('/backend/login.php', $('#login-form').serialize()).done((function(data) {
+				$.post('/api/login.php', $('#login-form').serialize()).done((function(data) {
 					if (data.err) {
 						this.error = true;
 						this.error_message = data.err;

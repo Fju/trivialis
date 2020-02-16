@@ -7,7 +7,7 @@ export function uploadFile(file, cwd, callback) {
 	data.append('cwd', cwd);
 			
 	request({ 
-		url: '/backend/assets.php',
+		url: '/api/assets.php',
 		data: data,
 		processData: false,
 		contentType: false,
@@ -19,7 +19,7 @@ export function uploadFile(file, cwd, callback) {
 
 export function deleteFile(name, callback) {
 	request({
-		url: '/backend/assets.php',
+		url: '/api/assets.php',
 		data: {
 			method: 'delete',
 			name: name
@@ -32,7 +32,7 @@ export function deleteFile(name, callback) {
 
 export function renameFile(name, name_new, callback) {
 	request({
-		url: '/backend/assets.php',
+		url: '/api/assets.php',
 		method: 'POST',
 		data: {
 			method: 'rename',
@@ -46,7 +46,7 @@ export function renameFile(name, name_new, callback) {
 
 export function createDir(name, callback) {
 	request({
-		url: '/backend/assets.php',
+		url: '/api/assets.php',
 		method: 'POST',
 		data: {
 			method: 'mkdir',
@@ -59,7 +59,7 @@ export function createDir(name, callback) {
 
 export function getFiles(path, callback) {
 	console.log('get files', path);
-	request({ url: '/backend/assets.php', method: 'GET', data: { path: path } }, data => {
+	request({ url: '/api/assets.php', method: 'GET', data: { path: path } }, data => {
 		if (typeof callback === 'function') callback(data);
 	});
 }

@@ -1,7 +1,7 @@
 .cache/
 node_modules/
 dist/*
-!dist/backend
+!dist/api
 !dist/phpinclude
 !dist/.htaccess
 !dist/config.yml
